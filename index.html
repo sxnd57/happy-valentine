@@ -55,6 +55,7 @@
         text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
         /* Animation nhịp đập nhẹ cho tiêu đề */
         animation: pulseText 3s infinite;
+        text-align: center;
       }
 
       #greeting-overlay p {
@@ -78,24 +79,6 @@
         100% {
           text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
         }
-      }
-
-      /* --- TEXT LOADING KHI GÔM TỤ --- */
-      #loading {
-        position: absolute;
-        top: 60%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: #ff0000;
-        font-family: monospace;
-        font-size: 1.2rem;
-        pointer-events: none;
-        transition: opacity 1s;
-        text-align: center;
-        line-height: 1.5;
-        z-index: 10;
-        text-shadow: 0 0 10px #ff0000;
-        opacity: 0;
       }
     </style>
   </head>
@@ -125,15 +108,22 @@
       // --- KHU VỰC ẢNH ---
       // ========================================================================
       const MY_PHOTOS = [
-        "https://picsum.photos/id/10/200/300",
-        "https://picsum.photos/id/12/200/300",
-        "https://picsum.photos/id/16/200/300",
-        "https://picsum.photos/id/20/200/300",
-        "https://picsum.photos/id/24/200/300",
-        "https://picsum.photos/id/28/200/300",
-        "https://picsum.photos/id/32/200/300",
-        "https://picsum.photos/id/36/200/300",
-        "https://picsum.photos/id/40/200/300",
+        "/photo/img1.jpg",
+        "/photo/img2.jpg",
+        "/photo/img4.jpg",
+        "/photo/img5.jpg",
+        "/photo/img6.jpg",
+        "/photo/img8.jpg",
+        "/photo/img9.jpg",
+        "/photo/img10.jpg",
+        "/photo/img11.jpg",
+        "/photo/img12.jpg",
+        "/photo/img13.jpg",
+        "/photo/img14.jpg",
+        "/photo/img15.jpg",
+        "/photo/img16.jpg",
+        "/photo/img17.jpg",
+        "/photo/img18.jpg",
       ];
       // ========================================================================
 
@@ -354,7 +344,7 @@
         return { geometry, textBaseColors, textSparkleOffsets };
       }
 
-      const textData = createTextParticles("Happy Valentine");
+      const textData = createTextParticles("Happy Valentine's Day");
       const textMat = new THREE.PointsMaterial({
         size: 0.35,
         map: getHeartTexture(),
@@ -444,7 +434,7 @@
         new THREE.Mesh(orbitPathGeo, orbitPathMat).rotateX(Math.PI / 2),
       );
 
-      for (let j = 0; j < 3; j++) {
+      for (let j = 0; j < 6; j++) {
         let p1 = createPhoto(j, 0);
         orbit1.add(p1.mesh);
         photos.push(p1);
