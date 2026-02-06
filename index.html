@@ -3,19 +3,33 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Valentine Cinematic</title>
+    <title>Valentine Cinematic - Falling Letters</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+
     <style>
       body {
         margin: 0;
         overflow: hidden;
         background-color: #000;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: "Dancing Script", cursive;
+        user-select: none;
       }
       canvas {
         display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
       }
 
-      /* --- MÀN HÌNH CHÚC MỪNG (GREETING) --- */
+      /* --- GREETING OVERLAY (Màn hình chờ ban đầu) --- */
       #greeting-overlay {
         position: fixed;
         top: 0;
@@ -28,68 +42,166 @@
         justify-content: center;
         align-items: center;
         z-index: 200;
-        transition: opacity 2.5s ease-in-out;
+        pointer-events: none;
       }
-
-      /* CSS cho chữ ẩn lúc đầu */
-      #greeting-overlay h1,
-      #greeting-overlay p {
-        opacity: 0; /* Ẩn */
-        transform: translateY(20px); /* Dịch xuống dưới chút */
-        transition:
-          opacity 2s ease-out,
-          transform 2s ease-out; /* Hiệu ứng hiện từ từ */
-        text-align: center;
-      }
-
-      /* Class này sẽ được JS thêm vào để hiện chữ */
-      #greeting-overlay .visible {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-      }
-
       #greeting-overlay h5 {
         color: #ff0055;
-        font-size: 1.5rem;
+        font-size: 2rem;
         margin: 0;
         text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
-        /* Animation nhịp đập nhẹ cho tiêu đề */
-        animation: pulseText 3s infinite;
         text-align: center;
+        opacity: 0;
       }
-
       #greeting-overlay p {
         color: #fff;
-        font-size: 1.5rem;
-        margin-top: 30px;
-        opacity: 0;
+        font-size: 1rem;
+        margin-top: 20px;
         font-weight: 300;
         letter-spacing: 2px;
         max-width: 80%;
+        text-align: center;
         line-height: 1.6;
+        opacity: 0;
       }
 
-      @keyframes pulseText {
-        0% {
-          text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
+      /* --- MAIN MESSAGE (Lời chúc sau khi gôm tụ) --- */
+      #main-message {
+        position: fixed;
+        top: 30%; /* Canh giữa màn hình */
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%; /* Giới hạn chiều rộng để đoạn văn không bị tràn */
+        text-align: center;
+        color: #fff0f5;
+        font-family: "Dancing Script", cursive;
+        /* Giảm kích thước font để phù hợp với đoạn văn dài */
+        font-size: 1.5rem;
+        line-height: 1.6; /* Tăng khoảng cách dòng cho dễ đọc */
+        z-index: 150;
+        pointer-events: none;
+        text-shadow:
+          0 0 10px rgba(255, 20, 147, 0.8),
+          0 0 20px rgba(255, 20, 147, 0.5);
+        opacity: 0; /* Ẩn mặc định */
+      }
+
+      /* Responsive cho mobile */
+      @media (max-width: 768px) {
+        #main-message {
+          font-size: 1.5rem;
+          width: 90%;
         }
-        50% {
-          text-shadow: 0 0 60px rgba(255, 0, 85, 1);
-        }
-        100% {
-          text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
-        }
+      }
+
+      /* --- FALLING LETTERS (THƯ RƠI) --- */
+      #letters-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        pointer-events: none; /* Click xuyên qua vùng trống */
+        overflow: hidden;
+      }
+
+      .falling-item {
+        position: absolute;
+        font-size: 2.5rem;
+        cursor: pointer;
+        pointer-events: auto; /* Để bắt sự kiện click */
+        filter: drop-shadow(0 0 10px rgba(255, 192, 203, 0.5));
+        transition: transform 0.1s;
+        will-change: transform;
+        top: -100px;
+        left: 0;
+      }
+
+      .falling-item:hover {
+        transform: scale(1.3);
+        filter: drop-shadow(0 0 15px #fff);
+        z-index: 150;
+      }
+
+      /* --- MODAL --- */
+      #card-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 300;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        backdrop-filter: blur(5px);
+      }
+      .modal-content {
+        background: #fff0f5;
+        width: 350px;
+        min-height: 250px;
+        padding: 30px;
+        border-radius: 15px;
+        position: relative;
+        box-shadow: 0 0 50px rgba(255, 105, 180, 0.6);
+        text-align: center;
+        transform: scale(0.5);
+        background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
+        border: 2px solid #ff99cc;
+      }
+      .modal-content h2 {
+        font-family: "Dancing Script", cursive;
+        color: #d63384;
+        font-size: 2.5rem;
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 1px dashed #ff99cc;
+        padding-bottom: 10px;
+      }
+      .modal-content p {
+        font-family: "Segoe UI", sans-serif;
+        color: #555;
+        font-size: 1.15rem;
+        line-height: 1.6;
+      }
+      .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 2rem;
+        cursor: pointer;
+        color: #ff99cc;
+        transition: color 0.3s;
+        line-height: 1;
+      }
+      .close-btn:hover {
+        color: #d63384;
       }
     </style>
   </head>
   <body>
-    <!-- MÀN HÌNH CHÚC MỪNG -->
+    <!-- Màn hình chờ ban đầu -->
     <div id="greeting-overlay">
-      <h5 id="greet-title">Happy Valentine's Day</h5>
-      <p id="greet-message">Gửi trọn yêu thương đến người anh yêu ❤️</p>
+      <h5 id="greet-title"></h5>
+      <p id="greet-message"></p>
     </div>
 
-    <!-- LOADING TEXT -->
+    <!-- Lời chúc chính hiện ra sau khi gôm tụ -->
+    <div id="main-message"></div>
+
+    <!-- Container chứa thư rơi -->
+    <div id="letters-container"></div>
+
+    <!-- Modal thiệp -->
+    <div id="card-modal" onclick="closeCard(event)">
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <span class="close-btn" onclick="closeCard()">×</span>
+        <h2 id="modal-title">Title</h2>
+        <p id="modal-body">Content goes here...</p>
+      </div>
+    </div>
 
     <script type="importmap">
       {
@@ -100,33 +212,147 @@
       }
     </script>
 
+    <script>
+      // Dữ liệu lời chúc cho các lá thư
+      const wishes = [
+        {
+          title: "Gửi Em",
+          content:
+            "Cảm ơn em đã đến và làm thế giới của anh trở nên rực rỡ. Happy Valentine!",
+        },
+        {
+          title: "My Love",
+          content:
+            "Mỗi lá thư là một mảnh ghép tình yêu anh dành cho em. Yêu em nhiều!",
+        },
+        {
+          title: "Sweetheart",
+          content:
+            "Mong rằng nụ cười của em sẽ luôn tỏa sáng như bầu trời đêm nay.",
+        },
+        {
+          title: "Forever",
+          content:
+            "Dù thời gian có trôi, tình cảm anh dành cho em vẫn mãi nguyên vẹn.",
+        },
+        {
+          title: "Bé Yêu",
+          content:
+            "Em là điều ngọt ngào nhất mà anh từng có. Chúc em một ngày thật vui!",
+        },
+        {
+          title: "Sunshine",
+          content:
+            "Em là ánh nắng ấm áp trong những ngày đông lạnh giá của anh.",
+        },
+      ];
+
+      const icons = ["💌", "💖", "🎁", "🌹", "✨", "🎀"];
+
+      // --- LOGIC THƯ RƠI (FALLING LETTERS) ---
+      function spawnFallingLetter() {
+        const container = document.getElementById("letters-container");
+        const el = document.createElement("div");
+        el.classList.add("falling-item");
+        el.innerText = icons[Math.floor(Math.random() * icons.length)];
+
+        const startX = Math.random() * window.innerWidth;
+        const duration = 6 + Math.random() * 6; // Rơi trong 6-12 giây
+        const rotationDir = Math.random() > 0.5 ? 1 : -1;
+
+        gsap.set(el, {
+          x: startX,
+          y: -100,
+          rotation: Math.random() * 360,
+        });
+
+        el.onclick = function () {
+          gsap.killTweensOf(el);
+          gsap.to(el, {
+            scale: 2,
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => el.remove(),
+          });
+          openCard(Math.floor(Math.random() * wishes.length));
+        };
+
+        container.appendChild(el);
+
+        gsap.to(el, {
+          y: window.innerHeight + 100,
+          duration: duration,
+          ease: "none",
+          onComplete: () => {
+            el.remove();
+            spawnFallingLetter();
+          },
+        });
+
+        gsap.to(el, {
+          x: startX + (Math.random() - 0.5) * 200,
+          rotation: `+=${360 * rotationDir}`,
+          duration: duration,
+          ease: "sine.inOut",
+        });
+      }
+
+      function startFallingLetters() {
+        for (let i = 0; i < 10; i++) {
+          setTimeout(spawnFallingLetter, Math.random() * 5000);
+        }
+      }
+
+      // --- MODAL LOGIC ---
+      function openCard(index) {
+        const modal = document.getElementById("card-modal");
+        const content = document.querySelector(".modal-content");
+        document.getElementById("modal-title").innerText = wishes[index].title;
+        document.getElementById("modal-body").innerText = wishes[index].content;
+        modal.style.display = "flex";
+        gsap.to(modal, { duration: 0.5, opacity: 1 });
+        gsap.fromTo(
+          content,
+          { scale: 0.5, opacity: 0, rotation: -10 },
+          {
+            duration: 0.6,
+            scale: 1,
+            opacity: 1,
+            rotation: 0,
+            ease: "back.out(1.7)",
+          },
+        );
+      }
+
+      function closeCard(event) {
+        const modal = document.getElementById("card-modal");
+        const content = document.querySelector(".modal-content");
+        gsap.to(content, {
+          duration: 0.3,
+          scale: 0.5,
+          opacity: 0,
+          ease: "power2.in",
+          onComplete: () => {
+            gsap.to(modal, {
+              duration: 0.2,
+              opacity: 0,
+              onComplete: () => {
+                modal.style.display = "none";
+              },
+            });
+          },
+        });
+      }
+
+      window.closeCard = closeCard;
+      window.startFallingLetters = startFallingLetters;
+    </script>
+
     <script type="module">
       import * as THREE from "three";
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-      // ========================================================================
-      // --- KHU VỰC ẢNH ---
-      // ========================================================================
-      const MY_PHOTOS = [
-        "/photo/img1.jpg",
-        "/photo/img2.jpg",
-        "/photo/img4.jpg",
-        "/photo/img5.jpg",
-        "/photo/img6.jpg",
-        "/photo/img8.jpg",
-        "/photo/img9.jpg",
-        "/photo/img10.jpg",
-        "/photo/img11.jpg",
-        "/photo/img12.jpg",
-        "/photo/img13.jpg",
-        "/photo/img14.jpg",
-        "/photo/img15.jpg",
-        "/photo/img16.jpg",
-        "/photo/img17.jpg",
-        "/photo/img18.jpg",
-      ];
-      // ========================================================================
-
+      // --- THREE.JS SETUP ---
       const CONF = {
         particleCount: 75000,
         particleSize: 0.25,
@@ -135,16 +361,11 @@
         orbitRadius: 28,
         sparkleSpeed: 4.0,
         sparkleIntensity: 0.4,
-        totalIntroTime: 18.0,
+        totalIntroTime: 28.0,
       };
-
-      let introFinished = false;
-      let currentOrbitOpacity = 0.0;
       let animationStarted = false;
-
       const scene = new THREE.Scene();
       scene.fog = new THREE.FogExp2(0x000000, 0.002);
-
       const camera = new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
@@ -152,532 +373,318 @@
         2000,
       );
       camera.position.set(0, 5, 100);
-
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       document.body.appendChild(renderer.domElement);
-
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.5;
 
-      // --- STARS ---
-      function getStarTexture() {
-        const canvas = document.createElement("canvas");
-        canvas.width = 32;
-        canvas.height = 32;
-        const ctx = canvas.getContext("2d");
-        const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-        grad.addColorStop(0, "rgba(255, 255, 255, 1)");
-        grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 32, 32);
-        return new THREE.CanvasTexture(canvas);
-      }
-      const starGeo = new THREE.BufferGeometry();
-      const starPos = [];
-      const starCount = 10000;
-      for (let i = 0; i < starCount; i++)
-        starPos.push(
+      // Stars
+      const sGeo = new THREE.BufferGeometry();
+      const sPos = [];
+      for (let i = 0; i < 10000; i++)
+        sPos.push(
           (Math.random() - 0.5) * 600,
           (Math.random() - 0.5) * 600,
           (Math.random() - 0.5) * 600,
         );
-      starGeo.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(starPos, 3),
+      sGeo.setAttribute("position", new THREE.Float32BufferAttribute(sPos, 3));
+
+      const starTex = (() => {
+        const c = document.createElement("canvas");
+        c.width = 28;
+        c.height = 28;
+        const x = c.getContext("2d");
+        const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+        g.addColorStop(0, "white");
+        g.addColorStop(1, "transparent");
+        x.fillStyle = g;
+        x.fillRect(0, 0, 32, 32);
+        return new THREE.CanvasTexture(c);
+      })();
+      scene.add(
+        new THREE.Points(
+          sGeo,
+          new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.8,
+            map: starTex,
+            transparent: true,
+            opacity: 0.8,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+          }),
+        ),
       );
-      const starMat = new THREE.PointsMaterial({
-        color: 0xffffff,
-        size: 0.8,
-        map: getStarTexture(),
-        transparent: true,
-        opacity: 0.8,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      });
-      scene.add(new THREE.Points(starGeo, starMat));
 
-      // --- HEART ---
-      function getHeartTexture() {
-        const canvas = document.createElement("canvas");
-        canvas.width = 32;
-        canvas.height = 32;
-        const ctx = canvas.getContext("2d");
-        const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-        grad.addColorStop(0, "rgba(255, 255, 255, 1)");
-        grad.addColorStop(0.2, "rgba(255, 255, 255, 0.8)");
-        grad.addColorStop(0.5, "rgba(255, 255, 255, 0.2)");
-        grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 32, 32);
-        return new THREE.CanvasTexture(canvas);
-      }
-
-      const geometry = new THREE.BufferGeometry();
-      const currentPositions = [];
-      const initialPositions = [];
-      const finalPositions = [];
-      const particleSchedules = [];
-      const colors = [];
-      const baseColors = [];
-      const sparkleOffsets = [];
-      const baseColorObj = new THREE.Color(CONF.heartColor);
-
+      // Heart
+      const hGeo = new THREE.BufferGeometry();
+      const curr = [],
+        init = [],
+        final = [],
+        sched = [],
+        cols = [],
+        baseCols = [],
+        offs = [];
+      const baseCol = new THREE.Color(CONF.heartColor);
       let i = 0;
       while (i < CONF.particleCount) {
-        const x = Math.random() * 3 - 1.5;
-        const y = Math.random() * 3 - 1.5;
-        const z = Math.random() * 3 - 1.5;
-        const a = x * x + (9 / 4) * z * z + y * y - 1;
-        const result =
-          a * a * a - x * x * y * y * y - (9 / 80) * z * z * y * y * y;
-
-        if (result < 0) {
-          finalPositions.push(
+        const x = Math.random() * 3 - 1.5,
+          y = Math.random() * 3 - 1.5,
+          z = Math.random() * 3 - 1.5;
+        if (
+          (x * x + 2.25 * z * z + y * y - 1) ** 3 -
+            x * x * y * y * y -
+            0.1125 * z * z * y * y * y <
+          0
+        ) {
+          final.push(
             x * CONF.heartScale,
             y * CONF.heartScale,
             z * CONF.heartScale,
           );
-          const r = 300 + Math.random() * 200;
-          const theta = Math.random() * Math.PI * 2;
-          const phi = Math.random() * Math.PI;
-          const startX = r * Math.sin(phi) * Math.cos(theta);
-          const startY = r * Math.sin(phi) * Math.sin(theta);
-          const startZ = r * Math.cos(phi);
-          initialPositions.push(startX, startY, startZ);
-          currentPositions.push(startX, startY, startZ);
-
-          const myStartTime = Math.random() * (CONF.totalIntroTime - 3.0);
-          const myDuration = 3.0 + Math.random() * 2.0;
-
-          particleSchedules.push({ start: myStartTime, duration: myDuration });
-
-          const c = baseColorObj.clone();
-          let brightness = 1.0 + y * 0.2 + (Math.random() - 0.5) * 0.1;
-          c.multiplyScalar(brightness);
-          if (c.g > 0.1) c.g = 0.0;
-          colors.push(c.r, c.g, c.b);
-          baseColors.push(c.r, c.g, c.b);
-          sparkleOffsets.push(Math.random() * Math.PI * 2);
+          const r = 300 + Math.random() * 200,
+            th = Math.random() * Math.PI * 2,
+            ph = Math.random() * Math.PI;
+          init.push(
+            r * Math.sin(ph) * Math.cos(th),
+            r * Math.sin(ph) * Math.sin(th),
+            r * Math.cos(ph),
+          );
+          curr.push(init[i * 3], init[i * 3 + 1], init[i * 3 + 2]);
+          // Tốc độ bay: 1.5 - 3s
+          sched.push({
+            s: Math.random() * (CONF.totalIntroTime - 3),
+            d: 4 + Math.random() * 1.5,
+          });
+          const c = baseCol.clone();
+          c.multiplyScalar(1 + y * 0.2 + (Math.random() - 0.5) * 0.1);
+          if (c.g > 0.1) c.g = 0;
+          cols.push(c.r, c.g, c.b);
+          baseCols.push(c.r, c.g, c.b);
+          offs.push(Math.random() * Math.PI * 2);
           i++;
         }
       }
-      geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(currentPositions, 3),
+      hGeo.setAttribute("position", new THREE.Float32BufferAttribute(curr, 3));
+      hGeo.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3));
+      const hMesh = new THREE.Points(
+        hGeo,
+        new THREE.PointsMaterial({
+          size: CONF.particleSize,
+          map: starTex,
+          vertexColors: true,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          transparent: true,
+          opacity: 0.9,
+        }),
       );
-      geometry.setAttribute(
-        "color",
-        new THREE.Float32BufferAttribute(colors, 3),
-      );
-      const material = new THREE.PointsMaterial({
-        size: CONF.particleSize,
-        map: getHeartTexture(),
-        vertexColors: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        transparent: true,
-        opacity: 0.9,
-      });
-      const heartMesh = new THREE.Points(geometry, material);
-      scene.add(heartMesh);
+      scene.add(hMesh);
 
-      // ================================================================
-      // --- TEXT "HAPPY VALENTINE" ---
-      // ================================================================
-      function createTextParticles(text) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = 1000;
-        canvas.height = 200;
-
-        ctx.font = "bold 100px 'Segoe UI', Arial, sans-serif";
-        ctx.fillStyle = "white";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const positions = [];
-        const colors = [];
-        const textBaseColors = [];
-        const textSparkleOffsets = [];
-        const colorObj = new THREE.Color(0xff88cc);
-
-        for (let y = 0; y < canvas.height; y += 3) {
-          for (let x = 0; x < canvas.width; x += 3) {
-            const index = (y * canvas.width + x) * 4;
-            const alpha = imgData.data[index + 3];
-
-            if (alpha > 128) {
-              const scale = 0.045;
-              const pX = (x - canvas.width / 2) * scale;
-              const pY = -(y - canvas.height / 2) * scale - 18;
-              const pZ = 0;
-
-              positions.push(pX, pY, pZ);
-
-              const c = colorObj.clone();
-              c.r += (Math.random() - 0.5) * 0.1;
-              c.b += (Math.random() - 0.5) * 0.1;
-
-              colors.push(c.r, c.g, c.b);
-              textBaseColors.push(c.r, c.g, c.b);
-              textSparkleOffsets.push(Math.random() * Math.PI * 2);
+      // Text (Particles - 3D) - Vẫn giữ nhưng mặc định ẩn, sẽ hiện cùng nhịp tim
+      function createTxt(t) {
+        const c = document.createElement("canvas");
+        const x = c.getContext("2d");
+        c.width = 1000;
+        c.height = 200;
+        x.font = "bold 100px 'Segoe UI'";
+        x.fillStyle = "white";
+        x.textAlign = "center";
+        x.textBaseline = "middle";
+        x.fillText(t, 500, 100);
+        const d = x.getImageData(0, 0, 1000, 200);
+        const p = [],
+          cl = [];
+        const co = new THREE.Color(0xff88cc);
+        for (let j = 0; j < 200; j += 3)
+          for (let k = 0; k < 1000; k += 3)
+            if (d.data[(j * 1000 + k) * 4 + 3] > 128) {
+              p.push((k - 500) * 0.045, -(j - 100) * 0.045 - 18, 0);
+              const nc = co.clone();
+              nc.r += (Math.random() - 0.5) * 0.1;
+              cl.push(nc.r, nc.g, nc.b);
             }
-          }
-        }
-
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute(
-          "position",
-          new THREE.Float32BufferAttribute(positions, 3),
-        );
-        geometry.setAttribute(
-          "color",
-          new THREE.Float32BufferAttribute(colors, 3),
-        );
-
-        return { geometry, textBaseColors, textSparkleOffsets };
+        const g = new THREE.BufferGeometry();
+        g.setAttribute("position", new THREE.Float32BufferAttribute(p, 3));
+        g.setAttribute("color", new THREE.Float32BufferAttribute(cl, 3));
+        return { g, c: cl };
       }
-
-      const textData = createTextParticles("Happy Valentine's Day");
-      const textMat = new THREE.PointsMaterial({
+      const tDat = createTxt("Happy Valentine's Day");
+      const tMat = new THREE.PointsMaterial({
         size: 0.35,
-        map: getHeartTexture(),
+        map: starTex,
         vertexColors: true,
         transparent: true,
-        opacity: 0.0,
+        opacity: 0,
         blending: THREE.AdditiveBlending,
         depthWrite: false,
       });
-      const textMesh = new THREE.Points(textData.geometry, textMat);
-      scene.add(textMesh);
+      const tMesh = new THREE.Points(tDat.g, tMat);
+      scene.add(tMesh);
 
-      // --- 3 ORBITS SYSTEM ---
-      const ringGroup = new THREE.Group();
-      scene.add(ringGroup);
-
-      function getPhotoTexture(index) {
-        const loader = new THREE.TextureLoader();
-        let url =
-          MY_PHOTOS.length > 0
-            ? MY_PHOTOS[index % MY_PHOTOS.length]
-            : `https://picsum.photos/200/150?random=${index}`;
-        return loader.load(url);
-      }
-      function createPhoto(idx, offset) {
-        const mesh = new THREE.Mesh(
-          new THREE.PlaneGeometry(4, 3),
-          new THREE.MeshBasicMaterial({
-            side: THREE.DoubleSide,
-            map: getPhotoTexture(idx),
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0,
-          }),
-        );
-        mesh.add(
-          new THREE.LineSegments(
-            new THREE.EdgesGeometry(new THREE.PlaneGeometry(4, 3)),
-            new THREE.LineBasicMaterial({
-              color: 0xff66aa,
-              transparent: true,
-              opacity: 0,
-              blending: THREE.AdditiveBlending,
-            }),
-          ),
-        );
-        return {
-          mesh,
-          angle: (idx / 6) * Math.PI * 2 + offset,
-          radius: CONF.orbitRadius,
-        };
-      }
-      const photos = [];
-      const orbit1 = new THREE.Group();
-      const orbit2 = new THREE.Group();
-      const orbit3 = new THREE.Group();
-
-      orbit1.rotation.z = Math.PI / 4;
-      orbit2.rotation.z = Math.PI / 4;
-      orbit2.rotation.y = (2 * Math.PI) / 3;
-      orbit3.rotation.z = Math.PI / 4;
-      orbit3.rotation.y = (4 * Math.PI) / 3;
-
-      ringGroup.add(orbit1);
-      ringGroup.add(orbit2);
-      ringGroup.add(orbit3);
-
-      const orbitPathMat = new THREE.MeshBasicMaterial({
+      // Orbit
+      const rGrp = new THREE.Group();
+      scene.add(rGrp);
+      const oMat = new THREE.MeshBasicMaterial({
         color: 0xff99cc,
         transparent: true,
         opacity: 0,
         blending: THREE.AdditiveBlending,
       });
-      const orbitPathGeo = new THREE.TorusGeometry(
-        CONF.orbitRadius,
-        0.05,
-        16,
-        100,
-      );
-      orbit1.add(
-        new THREE.Mesh(orbitPathGeo, orbitPathMat).rotateX(Math.PI / 2),
-      );
-      orbit2.add(
-        new THREE.Mesh(orbitPathGeo, orbitPathMat).rotateX(Math.PI / 2),
-      );
-      orbit3.add(
-        new THREE.Mesh(orbitPathGeo, orbitPathMat).rotateX(Math.PI / 2),
+      rGrp.add(
+        new THREE.Mesh(
+          new THREE.TorusGeometry(CONF.orbitRadius, 0.05, 16, 100),
+          oMat,
+        ).rotateX(Math.PI / 2),
       );
 
-      for (let j = 0; j < 6; j++) {
-        let p1 = createPhoto(j, 0);
-        orbit1.add(p1.mesh);
-        photos.push(p1);
-        let p2 = createPhoto(j + 6, Math.PI / 6);
-        orbit2.add(p2.mesh);
-        photos.push(p2);
-        let p3 = createPhoto(j + 12, Math.PI / 3);
-        orbit3.add(p3.mesh);
-        photos.push(p3);
-      }
+      // --- KỊCH BẢN CHÍNH (GSAP TIMELINE) ---
+      gsap
+        .timeline()
+        // 1. Màn hình chờ: Hiện chữ "Gửi người tớ thương..."
+        .set("#greeting-overlay", { opacity: 1 })
+        .to("#greet-title", {
+          duration: 2.5,
+          text: "Gửi đến người anh thương",
+          ease: "none",
+          opacity: 1,
+        })
+        .to(
+          "#greet-message",
+          {
+            duration: 6,
+            text: "Đây là món quà nhỏ anh dành tặng em trong ngày Valentine. Hy vọng nó sẽ mang lại nụ cười và niềm vui cho em!",
+            ease: "none",
+            opacity: 1,
+          },
+          "+=0.5",
+        )
+        // 2. Ẩn màn hình chờ -> Bắt đầu 3D
+        .to("#greeting-overlay", {
+          duration: 2,
+          opacity: 0,
+          delay: 1,
+          onComplete: () => {
+            document.getElementById("greeting-overlay").style.display = "none";
+            animationStarted = true;
+            startTime = clock.getElapsedTime();
 
-      // --- SHOOTING STARS ---
-      function getShootingStarTexture() {
-        const canvas = document.createElement("canvas");
-        canvas.width = 128;
-        canvas.height = 32;
-        const ctx = canvas.getContext("2d");
-        const grad = ctx.createLinearGradient(0, 0, 128, 0);
-        grad.addColorStop(0, "rgba(255, 255, 255, 0)");
-        grad.addColorStop(0.5, "rgba(255, 255, 255, 1)");
-        grad.addColorStop(1, "rgba(255, 255, 255, 0)");
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, 128, 32);
-        return new THREE.CanvasTexture(canvas);
-      }
-      const shootingStars = [];
-      const shootingStarGeo = new THREE.PlaneGeometry(12, 0.5);
-      const shootingStarMat = new THREE.MeshBasicMaterial({
-        map: getShootingStarTexture(),
-        side: THREE.DoubleSide,
-        transparent: true,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-      });
-      for (let i = 0; i < 6; i++) {
-        const mesh = new THREE.Mesh(shootingStarGeo, shootingStarMat);
-        mesh.visible = false;
-        scene.add(mesh);
-        shootingStars.push({ mesh, active: false, speed: 0 });
-      }
-      function spawnShootingStar() {
-        const star = shootingStars.find((s) => !s.active);
-        if (!star) return;
-        star.active = true;
-        star.mesh.visible = true;
-        star.mesh.position.set(
-          (Math.random() - 0.5) * 200,
-          80 + Math.random() * 50,
-          (Math.random() - 0.5) * 100,
-        );
-        star.mesh.rotation.z = -Math.PI / 4 + (Math.random() - 0.5) * 0.5;
-        star.speed = 1.5 + Math.random();
-      }
+            // --- LOGIC MỚI: CHỜ GÔM TỤ XONG MỚI HIỆN CHỮ ---
+            // Thời gian gôm tụ là khoảng 10 giây (8s intro + 2s buffer)
+            setTimeout(
+              () => {
+                // 3. Hiện lời chúc chính (Typewriter)
+                const msgEl = document.getElementById("main-message");
+                gsap.to(msgEl, { opacity: 1, duration: 1 }); // Fade in container
+                gsap.to(msgEl, {
+                  // Đoạn văn lời chúc lãng mạn
+                  text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại ánh sáng cho cuộc đời anh. Mỗi khoảnh khắc bên em đều là một món quà vô giá. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
+                  duration: 12, // Tăng thời gian gõ vì đoạn văn dài
+                  ease: "none",
+                  onComplete: () => {
+                    // 4. Đợi người dùng đọc xong (5 giây) -> Ẩn đi
+                    gsap.to(msgEl, {
+                      opacity: 0,
+                      delay: 6,
+                      duration: 1.5,
+                      onComplete: () => {
+                        // 5. Bắt đầu mưa thư tình
+                        window.startFallingLetters();
+                      },
+                    });
+                  },
+                });
+              },
+              (CONF.totalIntroTime + 1.5) * 1000,
+            ); // Chờ khoảng 9.5s để tim hình thành rõ
+          },
+        });
 
-      // --- LOGIC CHUYỂN CẢNH (GREETING -> MAIN) ---
-      const overlay = document.getElementById("greeting-overlay");
-      const title = document.getElementById("greet-title");
-      const message = document.getElementById("greet-message");
-
-      // 1. Hiện dòng 1: Happy Valentine's Day (Sau 0.5s)
-      setTimeout(() => {
-        title.classList.add("visible");
-      }, 500);
-
-      // 2. Hiện dòng 2: Lời chúc (Sau 2.5s)
-      setTimeout(() => {
-        message.classList.add("visible");
-      }, 2500);
-
-      // 3. Ẩn Overlay (Sau 6.5s)
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-
-        // 4. Bắt đầu gôm tụ trái tim (Sau khi overlay mờ hẳn)
-        setTimeout(() => {
-          overlay.style.display = "none";
-          animationStarted = true;
-          document.getElementById("loading").style.opacity = 1;
-        }, 2500); // Chờ 2.5s cho overlay mờ dần
-      }, 6500); // Chờ 6.5s để người dùng đọc chữ
-
-      // --- ANIMATION LOOP ---
+      // Animation Loop
       const clock = new THREE.Clock();
-      const loadingEl = document.getElementById("loading");
       let startTime = null;
-
+      let cOpc = 0;
       function easeOutCubic(x) {
         return 1 - Math.pow(1 - x, 3);
       }
 
       function animate() {
         requestAnimationFrame(animate);
-
         if (!animationStarted) {
-          // Chỉ chạy hiệu ứng sao bay và sao băng khi đang hiện chữ
-          if (Math.random() < 0.04) spawnShootingStar();
-          shootingStars.forEach((star) => {
-            if (star.active) {
-              star.mesh.translateX(star.speed);
-              if (star.mesh.position.x > 200 || star.mesh.position.y < -100) {
-                star.active = false;
-                star.mesh.visible = false;
-              }
-            }
-          });
           renderer.render(scene, camera);
           return;
         }
+        const elp = clock.getElapsedTime() - startTime;
 
-        // BẮT ĐẦU GÔM TỤ
-        if (startTime === null) startTime = clock.getElapsedTime();
-        const now = clock.getElapsedTime();
-        const elapsed = now - startTime;
-
-        // 1. CONSTRUCTION PHASE
-        if (elapsed < CONF.totalIntroTime + 2.0) {
-          const posAttr = heartMesh.geometry.attributes.position;
-          const posArray = posAttr.array;
+        // Heart Construction Phase
+        if (elp < CONF.totalIntroTime + 2) {
+          const pos = hMesh.geometry.attributes.position.array;
           for (let i = 0; i < CONF.particleCount; i++) {
-            const schedule = particleSchedules[i];
-            if (elapsed >= schedule.start) {
-              if (elapsed < schedule.start + schedule.duration) {
-                let localProgress =
-                  (elapsed - schedule.start) / schedule.duration;
-                localProgress = easeOutCubic(localProgress);
-                const i3 = i * 3;
-                posArray[i3] =
-                  initialPositions[i3] +
-                  (finalPositions[i3] - initialPositions[i3]) * localProgress;
-                posArray[i3 + 1] =
-                  initialPositions[i3 + 1] +
-                  (finalPositions[i3 + 1] - initialPositions[i3 + 1]) *
-                    localProgress;
-                posArray[i3 + 2] =
-                  initialPositions[i3 + 2] +
-                  (finalPositions[i3 + 2] - initialPositions[i3 + 2]) *
-                    localProgress;
-              } else {
-                const i3 = i * 3;
-                posArray[i3] = finalPositions[i3];
-                posArray[i3 + 1] = finalPositions[i3 + 1];
-                posArray[i3 + 2] = finalPositions[i3 + 2];
-              }
+            const s = sched[i];
+            if (elp >= s.s) {
+              const p = elp < s.s + s.d ? easeOutCubic((elp - s.s) / s.d) : 1;
+              const i3 = i * 3;
+              pos[i3] = init[i3] + (final[i3] - init[i3]) * p;
+              pos[i3 + 1] = init[i3 + 1] + (final[i3 + 1] - init[i3 + 1]) * p;
+              pos[i3 + 2] = init[i3 + 2] + (final[i3 + 2] - init[i3 + 2]) * p;
             }
           }
-          posAttr.needsUpdate = true;
-        } else {
-          if (!introFinished) {
-            introFinished = true;
-            loadingEl.style.opacity = 0;
+          hMesh.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // Heart Beat & Reveal Phase
+        if (elp > CONF.totalIntroTime * 0.8) {
+          hMesh.scale.setScalar(
+            1 + Math.pow(Math.sin(clock.getElapsedTime() * 0.5), 2) * 0.6,
+          );
+          if (cOpc < 1) {
+            cOpc += 0.003;
+            if (cOpc > 1) cOpc = 1;
+            oMat.opacity = cOpc * 0.6;
+            tMat.opacity = cOpc; // Chữ 3D cũng hiện dần lên làm nền
           }
         }
 
-        // 2. ORBIT & TEXT REVEAL
-        if (elapsed > CONF.totalIntroTime * 0.8) {
-          const beat = Math.pow(Math.sin(now * 0.5), 2) * 0.3;
-          heartMesh.scale.setScalar(1 + beat);
-
-          if (currentOrbitOpacity < 1.0) {
-            currentOrbitOpacity += 0.003;
-            if (currentOrbitOpacity > 1.0) currentOrbitOpacity = 1.0;
-
-            orbitPathMat.opacity = currentOrbitOpacity * 0.6;
-
-            textMat.opacity = currentOrbitOpacity;
-
-            photos.forEach((p) => {
-              p.mesh.material.opacity = currentOrbitOpacity;
-              if (p.mesh.children[0])
-                p.mesh.children[0].material.opacity = currentOrbitOpacity * 0.8;
-            });
-          }
-        }
-
-        // HEART SPARKLE
-        const heartColorAttr = heartMesh.geometry.attributes.color;
+        // Sparkle
+        const cols = hMesh.geometry.attributes.color.array;
+        const now = clock.getElapsedTime();
         for (let i = 0; i < CONF.particleCount; i++) {
+          const f =
+            1 +
+            Math.sin(now * CONF.sparkleSpeed + offs[i]) * CONF.sparkleIntensity;
           const i3 = i * 3;
-          const factor =
-            1.0 +
-            Math.sin(now * CONF.sparkleSpeed + sparkleOffsets[i]) *
-              CONF.sparkleIntensity;
-          heartColorAttr.array[i3] = Math.max(0, baseColors[i3] * factor);
-          heartColorAttr.array[i3 + 1] = Math.max(
-            0,
-            baseColors[i3 + 1] * factor,
-          );
-          heartColorAttr.array[i3 + 2] = Math.max(
-            0,
-            baseColors[i3 + 2] * factor,
-          );
+          cols[i3] = Math.max(0, baseCols[i3] * f);
+          cols[i3 + 1] = Math.max(0, baseCols[i3 + 1] * f);
+          cols[i3 + 2] = Math.max(0, baseCols[i3 + 2] * f);
         }
-        heartColorAttr.needsUpdate = true;
+        hMesh.geometry.attributes.color.needsUpdate = true;
 
-        // TEXT SPARKLE
-        if (textMat.opacity > 0) {
-          const textColorAttr = textMesh.geometry.attributes.color;
-          const count = textData.textBaseColors.length / 3;
-          for (let i = 0; i < count; i++) {
+        // Text Sparkle (3D)
+        if (tMat.opacity > 0) {
+          const tc = tMesh.geometry.attributes.color.array;
+          const tbc = tDat.c;
+          for (let i = 0; i < tbc.length / 3; i++) {
+            const f = 1 + Math.sin(now * 5 + i) * 0.5;
             const i3 = i * 3;
-            const factor =
-              1.0 + Math.sin(now * 5.0 + textData.textSparkleOffsets[i]) * 0.5;
-            textColorAttr.array[i3] = Math.max(
-              0,
-              textData.textBaseColors[i3] * factor,
-            );
-            textColorAttr.array[i3 + 1] = Math.max(
-              0,
-              textData.textBaseColors[i3 + 1] * factor,
-            );
-            textColorAttr.array[i3 + 2] = Math.max(
-              0,
-              textData.textBaseColors[i3 + 2] * factor,
-            );
+            tc[i3] = Math.max(0, tbc[i3] * f);
+            tc[i3 + 1] = Math.max(0, tbc[i3 + 1] * f);
+            tc[i3 + 2] = Math.max(0, tbc[i3 + 2] * f);
           }
-          textColorAttr.needsUpdate = true;
+          tMesh.geometry.attributes.color.needsUpdate = true;
         }
 
-        if (Math.random() < 0.04) spawnShootingStar();
-        shootingStars.forEach((star) => {
-          if (star.active) {
-            star.mesh.translateX(star.speed);
-            if (star.mesh.position.x > 200 || star.mesh.position.y < -100) {
-              star.active = false;
-              star.mesh.visible = false;
-            }
-          }
-        });
-
-        photos.forEach((p) => {
-          p.angle += 0.003;
-          p.mesh.position.x = Math.cos(p.angle) * p.radius;
-          p.mesh.position.y = Math.sin(p.angle) * p.radius;
-          p.mesh.lookAt(camera.position);
-        });
-
-        ringGroup.rotation.y = Math.sin(now * 0.1) * 0.1;
-
+        rGrp.rotation.y = Math.sin(now * 0.1) * 0.1;
         controls.update();
         renderer.render(scene, camera);
       }
       animate();
-
       window.addEventListener("resize", () => {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
