@@ -101,17 +101,23 @@
         width: 100%;
         height: 100%;
         z-index: 100;
-        pointer-events: none; /* Click xuyên qua vùng trống */
+        pointer-events: none;
         overflow: hidden;
       }
 
+      /* Style cho IMAGE icon */
       .falling-item {
         position: absolute;
-        font-size: 2.5rem;
+        width: 60px; /* Kích thước ảnh */
+        height: 60px; /* Kích thước ảnh */
+        object-fit: contain;
         cursor: pointer;
-        pointer-events: auto; /* Để bắt sự kiện click */
-        filter: drop-shadow(0 0 10px rgba(255, 192, 203, 0.5));
-        transition: transform 0.1s;
+        pointer-events: auto;
+        /* Drop shadow cho ảnh PNG trong suốt */
+        filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.6));
+        transition:
+          transform 0.1s,
+          filter 0.3s;
         will-change: transform;
         top: -100px;
         left: 0;
@@ -119,7 +125,7 @@
 
       .falling-item:hover {
         transform: scale(1.3);
-        filter: drop-shadow(0 0 15px #fff);
+        filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
         z-index: 150;
       }
 
@@ -247,14 +253,16 @@
         },
       ];
 
-      const icons = ["💌", "💖", "🎁", "🌹", "✨", "🎀"];
+      const imageUrls = ["/envelope.png", "/love-message.png", "/paper.png"];
 
-      // --- LOGIC THƯ RƠI (FALLING LETTERS) ---
       function spawnFallingLetter() {
         const container = document.getElementById("letters-container");
-        const el = document.createElement("div");
+
+        // Tạo thẻ IMG thay vì DIV
+        const el = document.createElement("img");
         el.classList.add("falling-item");
-        el.innerText = icons[Math.floor(Math.random() * icons.length)];
+        // Chọn ngẫu nhiên một hình ảnh
+        el.src = imageUrls[Math.floor(Math.random() * imageUrls.length - 1)];
 
         const startX = Math.random() * window.innerWidth;
         const duration = 6 + Math.random() * 6; // Rơi trong 6-12 giây
@@ -299,7 +307,7 @@
 
       function startFallingLetters() {
         for (let i = 0; i < 10; i++) {
-          setTimeout(spawnFallingLetter, Math.random() * 5000);
+          setTimeout(spawnFallingLetter, Math.random() * 6000);
         }
       }
 
