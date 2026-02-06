@@ -253,7 +253,7 @@
         },
       ];
 
-      const imageUrls = ["/envelope.png", "/love-message.png"];
+      const imageUrls = ["/envelope.png", "/love-message.png", "/paper.png"];
 
       function spawnFallingLetter() {
         const container = document.getElementById("letters-container");
@@ -262,7 +262,7 @@
         const el = document.createElement("img");
         el.classList.add("falling-item");
         // Chọn ngẫu nhiên một hình ảnh
-        el.src = imageUrls[Math.floor(Math.random() * imageUrls.length - 1)];
+        el.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
         const startX = Math.random() * window.innerWidth;
         const duration = 6 + Math.random() * 6; // Rơi trong 6-12 giây
