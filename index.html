@@ -67,7 +67,7 @@
       /* --- MAIN MESSAGE (Lời chúc sau khi gôm tụ) --- */
       #main-message {
         position: fixed;
-        top: 30%; /* Canh giữa màn hình */
+        top: 10%; /* Canh giữa màn hình */
         left: 50%;
         transform: translate(-50%, -50%);
         width: 80%; /* Giới hạn chiều rộng để đoạn văn không bị tràn */
@@ -75,7 +75,7 @@
         color: #fff0f5;
         font-family: "Dancing Script", cursive;
         /* Giảm kích thước font để phù hợp với đoạn văn dài */
-        font-size: 1.5rem;
+        font-size: 1rem;
         line-height: 1.6; /* Tăng khoảng cách dòng cho dễ đọc */
         z-index: 150;
         pointer-events: none;
@@ -88,7 +88,7 @@
       /* Responsive cho mobile */
       @media (max-width: 768px) {
         #main-message {
-          font-size: 1.5rem;
+          font-size: 1rem;
           width: 90%;
         }
       }
@@ -108,8 +108,8 @@
       /* Style cho IMAGE icon */
       .falling-item {
         position: absolute;
-        width: 60px; /* Kích thước ảnh */
-        height: 60px; /* Kích thước ảnh */
+        width: 45px; /* Kích thước ảnh */
+        height: 45px; /* Kích thước ảnh */
         object-fit: contain;
         cursor: pointer;
         pointer-events: auto;
@@ -167,7 +167,7 @@
         padding-bottom: 10px;
       }
       .modal-content p {
-        font-family: "Segoe UI", sans-serif;
+        font-family: "Dancing Script", cursive;
         color: #555;
         font-size: 1.15rem;
         line-height: 1.6;
@@ -265,7 +265,7 @@
         el.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
 
         const startX = Math.random() * window.innerWidth;
-        const duration = 6 + Math.random() * 6; // Rơi trong 6-12 giây
+        const duration = 10 + Math.random() * 6; // Rơi trong 6-12 giây
         const rotationDir = Math.random() > 0.5 ? 1 : -1;
 
         gsap.set(el, {
@@ -369,7 +369,7 @@
         orbitRadius: 28,
         sparkleSpeed: 4.0,
         sparkleIntensity: 0.4,
-        totalIntroTime: 28.0,
+        totalIntroTime: 30.0,
       };
       let animationStarted = false;
       const scene = new THREE.Scene();
@@ -526,7 +526,7 @@
       }
       const tDat = createTxt("Happy Valentine's Day");
       const tMat = new THREE.PointsMaterial({
-        size: 0.35,
+        size: 0.25,
         map: starTex,
         vertexColors: true,
         transparent: true,
@@ -594,7 +594,7 @@
                 gsap.to(msgEl, {
                   // Đoạn văn lời chúc lãng mạn
                   text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại ánh sáng cho cuộc đời anh. Mỗi khoảnh khắc bên em đều là một món quà vô giá. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
-                  duration: 12, // Tăng thời gian gõ vì đoạn văn dài
+                  duration: 20, // Tăng thời gian gõ vì đoạn văn dài
                   ease: "none",
                   onComplete: () => {
                     // 4. Đợi người dùng đọc xong (5 giây) -> Ẩn đi
