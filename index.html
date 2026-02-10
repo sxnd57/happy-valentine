@@ -6,8 +6,13 @@
     <title>Valentine Cinematic - Falling Letters</title>
 
     <link
-      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@300;400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@100;300;400;500;600&display=swap"
       rel="stylesheet"
+    />
+    <!-- Thêm icon font cho các biểu tượng -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -18,8 +23,10 @@
         margin: 0;
         overflow: hidden;
         background-color: #000;
-        font-family: "Dancing Script", cursive;
+        font-family:
+          "Segoe UI", sans-serif; /* Mặc định dùng font hiện đại cho UI */
         user-select: none;
+        -webkit-tap-highlight-color: transparent;
       }
       canvas {
         display: block;
@@ -29,15 +36,237 @@
         z-index: 1;
       }
 
-      /* --- GREETING OVERLAY (Màn hình chờ ban đầu) --- */
+      /* --- LOVE LOCK SCREEN (Màn hình khóa) --- */
+      #lock-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 60px;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.4); /* Nền tối nhẹ để thấy hạt 3D */
+        backdrop-filter: blur(3px);
+        transition:
+          opacity 0.5s,
+          transform 0.5s;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      /* Biểu tượng ổ khóa */
+      .lock-icon {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        opacity: 0.8;
+      }
+
+      /* Đồng hồ & Ngày tháng */
+      .clock-time {
+        font-size: 5.5rem;
+        font-weight: 200; /* Font mỏng giống iOS */
+        line-height: 1;
+        letter-spacing: -2px;
+      }
+      .clock-date {
+        font-size: 1.3rem;
+        font-weight: 400;
+        margin-top: 10px;
+        opacity: 0.9;
+      }
+
+      /* Thông báo tình yêu */
+      .notification-pill {
+        margin-top: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        padding: 12px 20px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 80%;
+        max-width: 320px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+      .notification-pill:active {
+        transform: scale(0.98);
+      }
+      .app-icon {
+        width: 40px;
+        height: 40px;
+        background: #ff0055;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+      }
+      .noti-content {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+      }
+      .noti-title {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .noti-time {
+        font-size: 0.75rem;
+        opacity: 0.6;
+        font-weight: 400;
+        margin-left: 10px;
+      }
+      .noti-msg {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+
+      /* Dòng chữ vuốt để mở */
+      .swipe-hint {
+        position: absolute;
+        bottom: 30px;
+        font-size: 1rem;
+        opacity: 0.6;
+        animation: swipeUp 2s infinite;
+        font-weight: 300;
+      }
+
+      @keyframes swipeUp {
+        0%,
+        100% {
+          transform: translateY(0);
+          opacity: 0.6;
+        }
+        50% {
+          transform: translateY(-10px);
+          opacity: 1;
+        }
+      }
+
+      /* --- KEYPAD SCREEN (Màn hình nhập pass) --- */
+      #keypad-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: none; /* Ẩn mặc định */
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(15px); /* Blur mạnh hơn khi nhập pass */
+        opacity: 0;
+      }
+
+      .enter-pass-text {
+        color: #fff;
+        font-size: 1.2rem;
+        margin-bottom: 30px;
+        font-weight: 400;
+        letter-spacing: 1px;
+      }
+
+      /* Dots indicator (Trái tim) */
+      .passcode-dots {
+        display: flex;
+        gap: 25px;
+        margin-bottom: 60px;
+      }
+      .dot {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background: transparent;
+        transition: all 0.2s;
+        box-sizing: border-box;
+      }
+      /* Khi nhập thì dot biến thành trái tim */
+      .dot.filled {
+        background: transparent;
+        border: none;
+        width: 20px;
+        height: 20px;
+      }
+      .dot.filled::before {
+        content: "❤";
+        color: #ff0055;
+        font-size: 20px;
+        line-height: 20px;
+        display: block;
+      }
+      .dot.error {
+        border-color: #ff3355;
+        background: #ff3355;
+        animation: shake 0.3s;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      /* Keypad Grid */
+      .keypad {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+        max-width: 320px;
+      }
+
+      .key-btn {
+        width: 75px;
+        height: 75px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        border: none;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        font-size: 2rem;
+        font-weight: 300;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: background 0.2s;
+        backdrop-filter: blur(5px);
+      }
+      .key-btn:active {
+        background: rgba(255, 255, 255, 0.4);
+      }
+      .key-btn.transparent {
+        background: transparent;
+        font-size: 1.2rem;
+        font-weight: 500;
+      }
+
+      /* --- GREETING OVERLAY (Màn hình chờ sau khi đăng nhập) --- */
       #greeting-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #000;
-        display: flex;
+        background-color: transparent;
+        display: none;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -46,7 +275,8 @@
       }
       #greeting-overlay h5 {
         color: #ff0055;
-        font-size: 2rem;
+        font-family: "Dancing Script", cursive;
+        font-size: 2.5rem;
         margin: 0;
         text-shadow: 0 0 30px rgba(255, 0, 85, 0.8);
         text-align: center;
@@ -54,7 +284,8 @@
       }
       #greeting-overlay p {
         color: #fff;
-        font-size: 1rem;
+        font-family: "Dancing Script", cursive;
+        font-size: 1.3rem;
         margin-top: 20px;
         font-weight: 300;
         letter-spacing: 2px;
@@ -64,36 +295,45 @@
         opacity: 0;
       }
 
-      /* --- MAIN MESSAGE (Lời chúc sau khi gôm tụ) --- */
+      /* --- MAIN MESSAGE --- */
       #main-message {
         position: fixed;
-        top: 10%; /* Canh giữa màn hình */
+        top: 10%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 80%; /* Giới hạn chiều rộng để đoạn văn không bị tràn */
+        width: 80%;
         text-align: center;
         color: #fff0f5;
         font-family: "Dancing Script", cursive;
-        /* Giảm kích thước font để phù hợp với đoạn văn dài */
         font-size: 1rem;
-        line-height: 1.6; /* Tăng khoảng cách dòng cho dễ đọc */
+        line-height: 1.6;
         z-index: 150;
         pointer-events: none;
         text-shadow:
           0 0 10px rgba(255, 20, 147, 0.8),
           0 0 20px rgba(255, 20, 147, 0.5);
-        opacity: 0; /* Ẩn mặc định */
+        opacity: 0;
       }
 
-      /* Responsive cho mobile */
       @media (max-width: 768px) {
         #main-message {
           font-size: 1rem;
           width: 90%;
         }
+        .key-btn {
+          width: 68px;
+          height: 68px;
+          font-size: 1.8rem;
+        }
+        .keypad {
+          gap: 20px;
+        }
+        .clock-time {
+          font-size: 4.5rem;
+        }
       }
 
-      /* --- FALLING LETTERS (THƯ RƠI) --- */
+      /* --- FALLING LETTERS --- */
       #letters-container {
         position: fixed;
         top: 0;
@@ -105,15 +345,13 @@
         overflow: hidden;
       }
 
-      /* Style cho IMAGE icon */
       .falling-item {
         position: absolute;
-        width: 45px; /* Kích thước ảnh */
-        height: 45px; /* Kích thước ảnh */
+        width: 45px;
+        height: 45px;
         object-fit: contain;
         cursor: pointer;
         pointer-events: auto;
-        /* Drop shadow cho ảnh PNG trong suốt */
         filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.6));
         transition:
           transform 0.1s,
@@ -156,21 +394,36 @@
         transform: scale(0.5);
         background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
         border: 2px solid #ff99cc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
+      /* Style mới cho ảnh trong modal */
+      #modal-image {
+        width: 100%;
+        max-height: 200px; /* Giới hạn chiều cao */
+        object-fit: cover; /* Cắt ảnh đẹp */
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+      }
+
       .modal-content h2 {
         font-family: "Dancing Script", cursive;
         color: #d63384;
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         margin-top: 0;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
         border-bottom: 1px dashed #ff99cc;
-        padding-bottom: 10px;
+        padding-bottom: 5px;
+        width: 100%;
       }
       .modal-content p {
         font-family: "Dancing Script", cursive;
         color: #555;
         font-size: 1.15rem;
         line-height: 1.6;
+        margin: 0;
       }
       .close-btn {
         position: absolute;
@@ -181,29 +434,91 @@
         color: #ff99cc;
         transition: color 0.3s;
         line-height: 1;
+        z-index: 10;
+        background: rgba(
+          255,
+          255,
+          255,
+          0.5
+        ); /* Nền mờ cho nút tắt để dễ thấy trên ảnh */
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       .close-btn:hover {
         color: #d63384;
+        background: rgba(255, 255, 255, 0.8);
       }
     </style>
   </head>
   <body>
-    <!-- Màn hình chờ ban đầu -->
+    <!-- 1. MÀN HÌNH KHÓA TÌNH YÊU -->
+    <div id="lock-screen" onclick="showKeypad()">
+      <div class="lock-icon"><i class="fas fa-lock"></i></div>
+      <div class="clock-time" id="real-time">14:02</div>
+      <div class="clock-date" id="real-date">Thứ Ba, 14 tháng 2</div>
+
+      <div class="notification-pill">
+        <div class="app-icon">
+          <i class="fas fa-heart" style="color: white"></i>
+        </div>
+        <div class="noti-content">
+          <div class="noti-title">
+            <span>Anh Yêu</span>
+            <span class="noti-time">bây giờ</span>
+          </div>
+          <div class="noti-msg">Anh có một món quà bất ngờ cho em...</div>
+        </div>
+      </div>
+
+      <div class="swipe-hint">Chạm để mở khóa</div>
+    </div>
+
+    <!-- 2. MÀN HÌNH KEYPAD -->
+    <div id="keypad-screen">
+      <div class="enter-pass-text">Nhập mật mã tình yêu</div>
+
+      <div class="passcode-dots" id="dots-container">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="keypad">
+        <button class="key-btn" onclick="pressKey(1)">1</button>
+        <button class="key-btn" onclick="pressKey(2)">2</button>
+        <button class="key-btn" onclick="pressKey(3)">3</button>
+        <button class="key-btn" onclick="pressKey(4)">4</button>
+        <button class="key-btn" onclick="pressKey(5)">5</button>
+        <button class="key-btn" onclick="pressKey(6)">6</button>
+        <button class="key-btn" onclick="pressKey(7)">7</button>
+        <button class="key-btn" onclick="pressKey(8)">8</button>
+        <button class="key-btn" onclick="pressKey(9)">9</button>
+        <button class="key-btn transparent"></button>
+        <button class="key-btn" onclick="pressKey(0)">0</button>
+        <button class="key-btn transparent" onclick="deleteKey()">⌫</button>
+      </div>
+    </div>
+
+    <!-- 3. Màn hình chờ 3D -->
     <div id="greeting-overlay">
       <h5 id="greet-title"></h5>
       <p id="greet-message"></p>
     </div>
 
-    <!-- Lời chúc chính hiện ra sau khi gôm tụ -->
     <div id="main-message"></div>
-
-    <!-- Container chứa thư rơi -->
     <div id="letters-container"></div>
 
-    <!-- Modal thiệp -->
+    <!-- Modal thiệp (Có thêm ảnh) -->
     <div id="card-modal" onclick="closeCard(event)">
       <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-btn" onclick="closeCard()">×</span>
+        <!-- Thẻ ảnh mới -->
+        <img id="modal-image" src="" alt="Valentine Image" />
         <h2 id="modal-title">Title</h2>
         <p id="modal-body">Content goes here...</p>
       </div>
@@ -219,60 +534,178 @@
     </script>
 
     <script>
-      // Dữ liệu lời chúc cho các lá thư
+      // --- CLOCK LOGIC ---
+      function updateClock() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        const days = [
+          "Chủ Nhật",
+          "Thứ Hai",
+          "Thứ Ba",
+          "Thứ Tư",
+          "Thứ Năm",
+          "Thứ Sáu",
+          "Thứ Bảy",
+        ];
+        const dayName = days[now.getDay()];
+        const date = now.getDate();
+        const month = now.getMonth() + 1;
+
+        document.getElementById("real-time").innerText = `${hours}:${minutes}`;
+        document.getElementById("real-date").innerText =
+          `${dayName}, ${date} tháng ${month}`;
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // --- KEYPAD LOGIC ---
+      const SECRET_PASS = "1402";
+      let currentInput = "";
+
+      function showKeypad() {
+        gsap.to("#lock-screen", {
+          y: -50,
+          opacity: 0,
+          duration: 0.4,
+          ease: "power2.in",
+          onComplete: () => {
+            document.getElementById("lock-screen").style.display = "none";
+            const keypadEl = document.getElementById("keypad-screen");
+            keypadEl.style.display = "flex";
+            gsap.to(keypadEl, { opacity: 1, duration: 0.4 });
+          },
+        });
+      }
+
+      function pressKey(num) {
+        if (currentInput.length < 4) {
+          currentInput += num;
+          updateDots();
+          if (currentInput.length === 4) {
+            setTimeout(checkPass, 200);
+          }
+        }
+      }
+
+      function deleteKey() {
+        if (currentInput.length > 0) {
+          currentInput = currentInput.slice(0, -1);
+          updateDots();
+        }
+      }
+
+      function updateDots() {
+        const dots = document.querySelectorAll(".dot");
+        dots.forEach((dot, index) => {
+          if (index < currentInput.length) {
+            dot.classList.add("filled");
+          } else {
+            dot.classList.remove("filled", "error");
+          }
+        });
+      }
+
+      function checkPass() {
+        const dotsContainer = document.getElementById("dots-container");
+        const dots = document.querySelectorAll(".dot");
+
+        if (currentInput === SECRET_PASS) {
+          gsap.to("#keypad-screen", {
+            opacity: 0,
+            scale: 1.1,
+            duration: 0.5,
+            onComplete: () => {
+              document.getElementById("keypad-screen").style.display = "none";
+              startMainSequence();
+            },
+          });
+        } else {
+          dots.forEach((d) => d.classList.add("error"));
+          gsap.fromTo(
+            dotsContainer,
+            { x: -15 },
+            {
+              x: 15,
+              duration: 0.08,
+              repeat: 5,
+              yoyo: true,
+              onComplete: () => {
+                gsap.to(dotsContainer, { x: 0 });
+                currentInput = "";
+                updateDots();
+              },
+            },
+          );
+        }
+      }
+
+      window.showKeypad = showKeypad;
+      window.pressKey = pressKey;
+      window.deleteKey = deleteKey;
+
+      // --- CÁC HÀM CŨ (CẬP NHẬT ẢNH) ---
       const wishes = [
         {
           title: "Gửi Em",
           content:
             "Cảm ơn em đã đến và làm thế giới của anh trở nên rực rỡ. Happy Valentine!",
+          image:
+            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400&q=80",
         },
         {
           title: "My Love",
           content:
             "Mỗi lá thư là một mảnh ghép tình yêu anh dành cho em. Yêu em nhiều!",
+          image:
+            "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&q=80",
         },
         {
           title: "Sweetheart",
           content:
             "Mong rằng nụ cười của em sẽ luôn tỏa sáng như bầu trời đêm nay.",
+          image:
+            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
         },
         {
           title: "Forever",
           content:
             "Dù thời gian có trôi, tình cảm anh dành cho em vẫn mãi nguyên vẹn.",
+          image:
+            "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=400&q=80",
         },
         {
           title: "Bé Yêu",
           content:
             "Em là điều ngọt ngào nhất mà anh từng có. Chúc em một ngày thật vui!",
+          image:
+            "https://images.unsplash.com/photo-1522858547137-f1dcec554f55?w=400&q=80",
         },
         {
           title: "Sunshine",
           content:
             "Em là ánh nắng ấm áp trong những ngày đông lạnh giá của anh.",
+          image:
+            "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=400&q=80",
         },
       ];
 
-      const imageUrls = ["/envelope.png", "/love-message.png", "/paper.png"];
+      const imageUrls = [
+        "https://cdn-icons-png.flaticon.com/512/2913/2913491.png",
+        "https://cdn-icons-png.flaticon.com/512/2544/2544158.png",
+        "https://cdn-icons-png.flaticon.com/512/3208/3208753.png",
+      ];
 
       function spawnFallingLetter() {
         const container = document.getElementById("letters-container");
-
-        // Tạo thẻ IMG thay vì DIV
         const el = document.createElement("img");
         el.classList.add("falling-item");
-        // Chọn ngẫu nhiên một hình ảnh
         el.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
-
         const startX = Math.random() * window.innerWidth;
-        const duration = 10 + Math.random() * 6; // Rơi trong 6-12 giây
+        const duration = 10 + Math.random() * 6;
         const rotationDir = Math.random() > 0.5 ? 1 : -1;
 
-        gsap.set(el, {
-          x: startX,
-          y: -100,
-          rotation: Math.random() * 360,
-        });
+        gsap.set(el, { x: startX, y: -100, rotation: Math.random() * 360 });
 
         el.onclick = function () {
           gsap.killTweensOf(el);
@@ -286,7 +719,6 @@
         };
 
         container.appendChild(el);
-
         gsap.to(el, {
           y: window.innerHeight + 100,
           duration: duration,
@@ -296,7 +728,6 @@
             spawnFallingLetter();
           },
         });
-
         gsap.to(el, {
           x: startX + (Math.random() - 0.5) * 200,
           rotation: `+=${360 * rotationDir}`,
@@ -311,12 +742,15 @@
         }
       }
 
-      // --- MODAL LOGIC ---
       function openCard(index) {
         const modal = document.getElementById("card-modal");
         const content = document.querySelector(".modal-content");
+
+        // Cập nhật nội dung và hình ảnh
         document.getElementById("modal-title").innerText = wishes[index].title;
         document.getElementById("modal-body").innerText = wishes[index].content;
+        document.getElementById("modal-image").src = wishes[index].image;
+
         modal.style.display = "flex";
         gsap.to(modal, { duration: 0.5, opacity: 1 });
         gsap.fromTo(
@@ -360,7 +794,6 @@
       import * as THREE from "three";
       import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-      // --- THREE.JS SETUP ---
       const CONF = {
         particleCount: 75000,
         particleSize: 0.25,
@@ -370,17 +803,25 @@
         sparkleSpeed: 4.0,
         sparkleIntensity: 0.4,
         totalIntroTime: 30.0,
+        bgParticleCount: 100000,
+        floorParticleCount: 20000,
+        floorBaseY: -20,
+        floorThickness: 15,
+        floorSize: 0.9,
       };
-      let animationStarted = false;
+
+      let animationStarted = false; // Flag quan trọng
+
       const scene = new THREE.Scene();
-      scene.fog = new THREE.FogExp2(0x000000, 0.002);
+      scene.fog = new THREE.FogExp2(0x000000, 0.0018);
       const camera = new THREE.PerspectiveCamera(
         60,
         window.innerWidth / window.innerHeight,
         0.1,
         2000,
       );
-      camera.position.set(0, 5, 100);
+      camera.position.set(0, 20, 110);
+
       const renderer = new THREE.WebGLRenderer({
         antialias: true,
         alpha: true,
@@ -388,48 +829,105 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       document.body.appendChild(renderer.domElement);
+
       const controls = new OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.autoRotate = true;
       controls.autoRotateSpeed = 0.5;
 
-      // Stars
-      const sGeo = new THREE.BufferGeometry();
-      const sPos = [];
-      for (let i = 0; i < 10000; i++)
-        sPos.push(
-          (Math.random() - 0.5) * 600,
-          (Math.random() - 0.5) * 600,
-          (Math.random() - 0.5) * 600,
-        );
-      sGeo.setAttribute("position", new THREE.Float32BufferAttribute(sPos, 3));
-
-      const starTex = (() => {
+      const pTex = (() => {
         const c = document.createElement("canvas");
-        c.width = 28;
-        c.height = 28;
+        c.width = 64;
+        c.height = 64;
         const x = c.getContext("2d");
-        const g = x.createRadialGradient(16, 16, 0, 16, 16, 16);
-        g.addColorStop(0, "white");
-        g.addColorStop(1, "transparent");
+        const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+        g.addColorStop(0, "rgba(255,255,255,1)");
+        g.addColorStop(0.3, "rgba(255,180,220,0.8)");
+        g.addColorStop(1, "rgba(0,0,0,0)");
         x.fillStyle = g;
-        x.fillRect(0, 0, 32, 32);
+        x.fillRect(0, 0, 64, 64);
         return new THREE.CanvasTexture(c);
       })();
-      scene.add(
-        new THREE.Points(
-          sGeo,
-          new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.8,
-            map: starTex,
-            transparent: true,
-            opacity: 0.8,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending,
-          }),
-        ),
+
+      // 1. STARS BACKGROUND
+      const bgGeo = new THREE.BufferGeometry();
+      const bgPos = [],
+        bgColors = [];
+      for (let i = 0; i < CONF.bgParticleCount; i++) {
+        const r = 100 + Math.random() * 400;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        bgPos.push(
+          r * Math.sin(phi) * Math.cos(theta),
+          r * Math.sin(phi) * Math.sin(theta),
+          r * Math.cos(phi),
+        );
+        const c = new THREE.Color().setHSL(Math.random() * 0.1 + 0.9, 0.7, 0.8);
+        bgColors.push(c.r, c.g, c.b);
+      }
+      bgGeo.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(bgPos, 3),
       );
+      bgGeo.setAttribute(
+        "color",
+        new THREE.Float32BufferAttribute(bgColors, 3),
+      );
+      const bgMat = new THREE.PointsMaterial({
+        size: 1.5,
+        map: pTex,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.5,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      scene.add(new THREE.Points(bgGeo, bgMat));
+
+      // 2. VOLUMETRIC FLOOR
+      const floorGeo = new THREE.BufferGeometry();
+      const floorPositions = [],
+        floorColors = [],
+        floorBaseHeights = [],
+        floorSeeds = [];
+      for (let i = 0; i < CONF.floorParticleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 180;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const baseY =
+          CONF.floorBaseY + (Math.random() - 0.5) * CONF.floorThickness;
+        floorPositions.push(x, baseY, z);
+        floorBaseHeights.push(baseY);
+        floorSeeds.push(Math.random() * Math.PI * 2);
+        const col = new THREE.Color();
+        const mix = Math.random();
+        col.setHSL(0.9 + mix * 0.1, 0.8, 0.6 + mix * 0.3);
+        const depthFactor =
+          (baseY - (CONF.floorBaseY - CONF.floorThickness / 2)) /
+          CONF.floorThickness;
+        col.multiplyScalar(0.4 + depthFactor * 0.6);
+        floorColors.push(col.r, col.g, col.b);
+      }
+      floorGeo.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(floorPositions, 3),
+      );
+      floorGeo.setAttribute(
+        "color",
+        new THREE.Float32BufferAttribute(floorColors, 3),
+      );
+      const floorMat = new THREE.PointsMaterial({
+        size: CONF.floorSize,
+        map: pTex,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      const floorMesh = new THREE.Points(floorGeo, floorMat);
+      scene.add(floorMesh);
 
       // Heart
       const hGeo = new THREE.BufferGeometry();
@@ -457,8 +955,8 @@
             y * CONF.heartScale,
             z * CONF.heartScale,
           );
-          const r = 300 + Math.random() * 200,
-            th = Math.random() * Math.PI * 2,
+          const r = 300 + Math.random() * 200;
+          const th = Math.random() * Math.PI * 2,
             ph = Math.random() * Math.PI;
           init.push(
             r * Math.sin(ph) * Math.cos(th),
@@ -466,7 +964,6 @@
             r * Math.cos(ph),
           );
           curr.push(init[i * 3], init[i * 3 + 1], init[i * 3 + 2]);
-          // Tốc độ bay: 1.5 - 3s
           sched.push({
             s: Math.random() * (CONF.totalIntroTime - 3),
             d: 4 + Math.random() * 1.5,
@@ -486,7 +983,7 @@
         hGeo,
         new THREE.PointsMaterial({
           size: CONF.particleSize,
-          map: starTex,
+          map: pTex,
           vertexColors: true,
           blending: THREE.AdditiveBlending,
           depthWrite: false,
@@ -496,11 +993,11 @@
       );
       scene.add(hMesh);
 
-      // Text (Particles - 3D) - Vẫn giữ nhưng mặc định ẩn, sẽ hiện cùng nhịp tim
+      // Text 3D
       function createTxt(t) {
         const c = document.createElement("canvas");
         const x = c.getContext("2d");
-        c.width = 1000;
+        c.width = 800;
         c.height = 200;
         x.font = "bold 100px 'Segoe UI'";
         x.fillStyle = "white";
@@ -510,7 +1007,7 @@
         const d = x.getImageData(0, 0, 1000, 200);
         const p = [],
           cl = [];
-        const co = new THREE.Color(0xff88cc);
+        const co = new THREE.Color("#ff66aa");
         for (let j = 0; j < 200; j += 3)
           for (let k = 0; k < 1000; k += 3)
             if (d.data[(j * 1000 + k) * 4 + 3] > 128) {
@@ -526,8 +1023,8 @@
       }
       const tDat = createTxt("Happy Valentine's Day");
       const tMat = new THREE.PointsMaterial({
-        size: 0.25,
-        map: starTex,
+        size: 0.2,
+        map: pTex,
         vertexColors: true,
         transparent: true,
         opacity: 0,
@@ -535,7 +1032,7 @@
         depthWrite: false,
       });
       const tMesh = new THREE.Points(tDat.g, tMat);
-      scene.add(tMesh);
+      // scene.add(tMesh); // Bỏ comment nếu muốn hiện chữ 3D
 
       // Orbit
       const rGrp = new THREE.Group();
@@ -546,78 +1043,74 @@
         opacity: 0,
         blending: THREE.AdditiveBlending,
       });
-      rGrp.add(
-        new THREE.Mesh(
-          new THREE.TorusGeometry(CONF.orbitRadius, 0.05, 16, 100),
-          oMat,
-        ).rotateX(Math.PI / 2),
-      );
+      // rGrp.add(new THREE.Mesh(new THREE.TorusGeometry(CONF.orbitRadius, 0.05, 16, 100), oMat).rotateX(Math.PI / 2));
 
-      // --- KỊCH BẢN CHÍNH (GSAP TIMELINE) ---
-      gsap
-        .timeline()
-        // 1. Màn hình chờ: Hiện chữ "Gửi người tớ thương..."
-        .set("#greeting-overlay", { opacity: 1 })
-        .to("#greet-title", {
-          duration: 2.5,
-          text: "Gửi đến người anh thương",
-          ease: "none",
-          opacity: 1,
-        })
-        .to(
-          "#greet-message",
-          {
-            duration: 6,
-            text: "Đây là món quà nhỏ anh dành tặng em trong ngày Valentine. Hy vọng nó sẽ mang lại nụ cười và niềm vui cho em!",
-            ease: "none",
-            opacity: 1,
-          },
-          "+=0.5",
-        )
-        // 2. Ẩn màn hình chờ -> Bắt đầu 3D
-        .to("#greeting-overlay", {
-          duration: 2,
-          opacity: 0,
-          delay: 1,
-          onComplete: () => {
-            document.getElementById("greeting-overlay").style.display = "none";
-            animationStarted = true;
-            startTime = clock.getElapsedTime();
-
-            // --- LOGIC MỚI: CHỜ GÔM TỤ XONG MỚI HIỆN CHỮ ---
-            // Thời gian gôm tụ là khoảng 10 giây (8s intro + 2s buffer)
-            setTimeout(
-              () => {
-                // 3. Hiện lời chúc chính (Typewriter)
-                const msgEl = document.getElementById("main-message");
-                gsap.to(msgEl, { opacity: 1, duration: 1 }); // Fade in container
-                gsap.to(msgEl, {
-                  // Đoạn văn lời chúc lãng mạn
-                  text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại ánh sáng cho cuộc đời anh. Mỗi khoảnh khắc bên em đều là một món quà vô giá. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
-                  duration: 20, // Tăng thời gian gõ vì đoạn văn dài
-                  ease: "none",
-                  onComplete: () => {
-                    // 4. Đợi người dùng đọc xong (5 giây) -> Ẩn đi
-                    gsap.to(msgEl, {
-                      opacity: 0,
-                      delay: 6,
-                      duration: 1.5,
-                      onComplete: () => {
-                        // 5. Bắt đầu mưa thư tình
-                        window.startFallingLetters();
-                      },
-                    });
-                  },
-                });
-              },
-              (CONF.totalIntroTime + 1.5) * 1000,
-            ); // Chờ khoảng 9.5s để tim hình thành rõ
-          },
-        });
-
-      // Animation Loop
+      // --- KỊCH BẢN CHÍNH ---
       const clock = new THREE.Clock();
       let startTime = null;
+
+      function startMainSequence() {
+        const overlay = document.getElementById("greeting-overlay");
+        overlay.style.display = "flex";
+
+        gsap
+          .timeline()
+          .set("#greeting-overlay", { opacity: 1 })
+          .to("#greet-title", {
+            duration: 2.5,
+            text: "Gửi đến người anh thương",
+            ease: "none",
+            opacity: 1,
+          })
+          .to(
+            "#greet-message",
+            {
+              duration: 6,
+              text: "Đây là món quà nhỏ anh dành tặng em trong ngày Valentine. Hy vọng nó sẽ mang lại nụ cười và niềm vui cho em!",
+              ease: "none",
+              opacity: 1,
+            },
+            "+=0.5",
+          )
+          .to("#greeting-overlay", {
+            duration: 2,
+            opacity: 0,
+            delay: 1,
+            onComplete: () => {
+              document.getElementById("greeting-overlay").style.display =
+                "none";
+              animationStarted = true;
+              startTime = clock.getElapsedTime();
+
+              setTimeout(
+                () => {
+                  const msgEl = document.getElementById("main-message");
+                  gsap.to(msgEl, { opacity: 1, duration: 1 });
+                  gsap.to(msgEl, {
+                    text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại ánh sáng cho cuộc đời anh. Mỗi khoảnh khắc bên em đều là một món quà vô giá. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
+                    duration: 20,
+                    ease: "none",
+                    onComplete: () => {
+                      gsap.to(msgEl, {
+                        opacity: 0,
+                        delay: 6,
+                        duration: 1.5,
+                        onComplete: () => {
+                          window.startFallingLetters();
+                        },
+                      });
+                    },
+                  });
+                },
+                (CONF.totalIntroTime + 1.5) * 1000,
+              );
+            },
+          });
+      }
+
+      window.startMainSequence = startMainSequence;
+
+      // Animation Loop
       let cOpc = 0;
       function easeOutCubic(x) {
         return 1 - Math.pow(1 - x, 3);
@@ -625,13 +1118,31 @@
 
       function animate() {
         requestAnimationFrame(animate);
+        const now = clock.getElapsedTime();
+
+        if (floorMesh) {
+          const fPos = floorMesh.geometry.attributes.position.array;
+          for (let i = 0; i < CONF.floorParticleCount; i++) {
+            const i3 = i * 3;
+            const x = fPos[i3];
+            const z = fPos[i3 + 2];
+            const baseY = floorBaseHeights[i];
+            const dist = Math.sqrt(x * x + z * z);
+            const wave =
+              Math.sin(now * 0.6 + dist * 0.04 + floorSeeds[i]) * 2.8;
+            fPos[i3 + 1] = baseY + wave;
+          }
+          floorMesh.geometry.attributes.position.needsUpdate = true;
+          floorMat.opacity = 0.5 + Math.sin(now * 0.3) * 0.2;
+        }
+
         if (!animationStarted) {
           renderer.render(scene, camera);
           return;
         }
-        const elp = clock.getElapsedTime() - startTime;
 
-        // Heart Construction Phase
+        const elp = now - startTime;
+
         if (elp < CONF.totalIntroTime + 2) {
           const pos = hMesh.geometry.attributes.position.array;
           for (let i = 0; i < CONF.particleCount; i++) {
@@ -647,7 +1158,6 @@
           hMesh.geometry.attributes.position.needsUpdate = true;
         }
 
-        // Heart Beat & Reveal Phase
         if (elp > CONF.totalIntroTime * 0.8) {
           hMesh.scale.setScalar(
             1 + Math.pow(Math.sin(clock.getElapsedTime() * 0.5), 2) * 0.6,
@@ -656,13 +1166,11 @@
             cOpc += 0.003;
             if (cOpc > 1) cOpc = 1;
             oMat.opacity = cOpc * 0.6;
-            tMat.opacity = cOpc; // Chữ 3D cũng hiện dần lên làm nền
+            tMat.opacity = cOpc;
           }
         }
 
-        // Sparkle
         const cols = hMesh.geometry.attributes.color.array;
-        const now = clock.getElapsedTime();
         for (let i = 0; i < CONF.particleCount; i++) {
           const f =
             1 +
@@ -674,7 +1182,6 @@
         }
         hMesh.geometry.attributes.color.needsUpdate = true;
 
-        // Text Sparkle (3D)
         if (tMat.opacity > 0) {
           const tc = tMesh.geometry.attributes.color.array;
           const tbc = tDat.c;
