@@ -547,9 +547,9 @@
     <div id="letters-container"></div>
 
     <!-- Nút bật/tắt nhạc -->
-    <button id="music-btn" class="music-btn" onclick="toggleMusic()">
+    <!-- <button id="music-btn" class="music-btn" onclick="toggleMusic()">
       <i class="fas fa-volume-high"></i>
-    </button>
+    </button> -->
 
     <!-- Modal thiệp (Có thêm ảnh) -->
     <div id="card-modal" onclick="closeCard(event)">
@@ -672,23 +672,23 @@
             audio.volume = 0; // Để 0 ban đầu
             // Thử phát ngay khi click
             const playPromise = audio.play();
-            if (playPromise !== undefined) {
-              playPromise
-                .then((_) => {
-                  // Phát thành công -> Chờ fade in sau
-                  document.querySelector("#music-btn i").className =
-                    "fas fa-volume-high";
-                })
-                .catch((error) => {
-                  console.log(
-                    "Autoplay bị chặn hoặc file chưa load xong:",
-                    error,
-                  );
-                  // Đổi icon thành tắt tiếng để người dùng biết bấm vào
-                  document.querySelector("#music-btn i").className =
-                    "fas fa-volume-xmark";
-                });
-            }
+            // if (playPromise !== undefined) {
+            //   playPromise
+            //     .then((_) => {
+            //       // Phát thành công -> Chờ fade in sau
+            //       document.querySelector("#music-btn i").className =
+            //         "fas fa-volume-high";
+            //     })
+            //     .catch((error) => {
+            //       console.log(
+            //         "Autoplay bị chặn hoặc file chưa load xong:",
+            //         error,
+            //       );
+            //       // Đổi icon thành tắt tiếng để người dùng biết bấm vào
+            //       document.querySelector("#music-btn i").className =
+            //         "fas fa-volume-xmark";
+            //     });
+            // }
           }
 
           gsap.to("#keypad-screen", {
@@ -1161,15 +1161,15 @@
             onComplete: () => {
               // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG VÀ HIỆN NÚT NHẠC ---
               const audio = document.getElementById("bg-music");
-              const musicBtn = document.getElementById("music-btn");
+              // const musicBtn = document.getElementById("music-btn");
 
               // Hiện nút nhạc ngay lập tức
-              musicBtn.style.display = "flex";
-              gsap.fromTo(
-                musicBtn,
-                { opacity: 0, scale: 0.5 },
-                { opacity: 1, scale: 1, duration: 1 },
-              );
+              // musicBtn.style.display = "flex";
+              // gsap.fromTo(
+              //   musicBtn,
+              //   { opacity: 0, scale: 0.5 },
+              //   { opacity: 1, scale: 1, duration: 1 },
+              // );
 
               if (audio) {
                 // Audio đã play ở checkPass (hoặc fail).
