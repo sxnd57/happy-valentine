@@ -314,6 +314,33 @@
         opacity: 0;
       }
 
+      /* --- MUSIC CONTROL BUTTON --- */
+      .music-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        /* Tăng z-index lên cao nhất để không bị che */
+        z-index: 2000;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2); /* Tăng độ sáng nền chút */
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: #fff;
+        font-size: 1.2rem;
+        cursor: pointer;
+        backdrop-filter: blur(5px);
+        display: none; /* Ẩn mặc định, hiện sau khi mở khóa */
+        justify-content: center;
+        align-items: center;
+        transition: all 0.3s;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      }
+      .music-btn:hover {
+        background: rgba(255, 255, 255, 0.4);
+        transform: scale(1.1);
+      }
+
       @media (max-width: 768px) {
         #main-message {
           font-size: 1rem;
@@ -455,8 +482,7 @@
   </head>
   <body>
     <!-- 0. AUDIO BACKGROUND -->
-    <!-- Bạn có thể thay đổi link nhạc tại đây (ưu tiên link mp3 trực tiếp) -->
-    <!-- Link nhạc demo: Beautiful In White (Instrumental / Cover) -->
+    <!-- Thêm preload="auto" để trình duyệt tải nhạc trước -->
     <audio id="bg-music" loop preload="auto">
       <source src="/lighters.mp3" type="audio/mpeg" />
     </audio>
@@ -519,6 +545,11 @@
     <div id="main-message"></div>
     <div id="letters-container"></div>
 
+    <!-- Nút bật/tắt nhạc -->
+    <button id="music-btn" class="music-btn" onclick="toggleMusic()">
+      <i class="fas fa-volume-high"></i>
+    </button>
+
     <!-- Modal thiệp (Có thêm ảnh) -->
     <div id="card-modal" onclick="closeCard(event)">
       <div class="modal-content" onclick="event.stopPropagation()">
@@ -540,6 +571,20 @@
     </script>
 
     <script>
+      // --- MUSIC CONTROL ---
+      function toggleMusic() {
+        const audio = document.getElementById("bg-music");
+        const btnIcon = document.querySelector("#music-btn i");
+        if (audio.paused) {
+          audio.play();
+          btnIcon.className = "fas fa-volume-high";
+        } else {
+          audio.pause();
+          btnIcon.className = "fas fa-volume-xmark";
+        }
+      }
+      window.toggleMusic = toggleMusic;
+
       // --- CLOCK LOGIC ---
       function updateClock() {
         const now = new Date();
@@ -617,13 +662,39 @@
         const dots = document.querySelectorAll(".dot");
 
         if (currentInput === SECRET_PASS) {
-          // --- FIX: KÍCH HOẠT AUDIO NGAY KHI MỞ KHÓA (SILENT) ---
+          // --- XỬ LÝ NHẠC MẠNH MẼ HƠN ---
           const audio = document.getElementById("bg-music");
+          const musicBtn = document.getElementById("music-btn");
+
+          // Hiện nút nhạc ngay lập tức
+          musicBtn.style.display = "flex";
+          gsap.fromTo(
+            musicBtn,
+            { opacity: 0, scale: 0.5 },
+            { opacity: 1, scale: 1, duration: 0.5 },
+          );
+
           if (audio) {
-            audio.volume = 0; // Để 0 để chưa nghe thấy
-            audio.play().catch((e) => {
-              console.log("Audio play failed on click:", e);
-            });
+            audio.volume = 0; // Để 0 ban đầu
+            // Thử phát ngay khi click
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+              playPromise
+                .then((_) => {
+                  // Phát thành công -> Chờ fade in sau
+                  document.querySelector("#music-btn i").className =
+                    "fas fa-volume-high";
+                })
+                .catch((error) => {
+                  console.log(
+                    "Autoplay bị chặn hoặc file chưa load xong:",
+                    error,
+                  );
+                  // Đổi icon thành tắt tiếng để người dùng biết bấm vào
+                  document.querySelector("#music-btn i").className =
+                    "fas fa-volume-xmark";
+                });
+            }
           }
 
           gsap.to("#keypad-screen", {
@@ -1096,9 +1167,13 @@
             onComplete: () => {
               // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG ---
               const audio = document.getElementById("bg-music");
+
               if (audio) {
-                // Audio đã play ở checkPass, giờ chỉ cần fade in
-                audio.currentTime = 0; // Reset lại từ đầu nếu muốn khớp nhạc
+                // Audio đã play ở checkPass (hoặc fail).
+                // Bây giờ cố gắng fade in volume
+                // Nếu trước đó fail, thì currentTime đang là 0.
+                // Mình chỉ cần tăng volume. Nếu nó đang pause thì thôi (người dùng sẽ tự bấm).
+                // Nhưng nếu nó đang play (silent), thì volume lên 1 sẽ nghe thấy.
                 gsap.to(audio, { volume: 1, duration: 3 });
               }
 
