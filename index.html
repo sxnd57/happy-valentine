@@ -1103,7 +1103,7 @@
         g.setAttribute("color", new THREE.Float32BufferAttribute(cl, 3));
         return { g, c: cl };
       }
-      const tDat = createTxt("Happy Valentine's Day");
+      const tDat = createTxt("Happy Valentine");
       const tMat = new THREE.PointsMaterial({
         size: 0.2,
         map: pTex,
@@ -1125,7 +1125,12 @@
         opacity: 0,
         blending: THREE.AdditiveBlending,
       });
-      // rGrp.add(new THREE.Mesh(new THREE.TorusGeometry(CONF.orbitRadius, 0.05, 16, 100), oMat).rotateX(Math.PI / 2));
+      rGrp.add(
+        new THREE.Mesh(
+          new THREE.TorusGeometry(CONF.orbitRadius, 0.05, 16, 100),
+          oMat,
+        ).rotateX(Math.PI / 2),
+      );
 
       // --- KỊCH BẢN CHÍNH ---
       const clock = new THREE.Clock();
@@ -1135,9 +1140,9 @@
         const overlay = document.getElementById("greeting-overlay");
         overlay.style.display = "flex";
 
-        gsap
-          .timeline()
-          .set("#greeting-overlay", { opacity: 1 })
+        const tl = gsap.timeline();
+
+        tl.set("#greeting-overlay", { opacity: 1 })
           .to("#greet-title", {
             duration: 2.5,
             text: "Gửi đến người anh thương",
@@ -1154,62 +1159,84 @@
             },
             "+=0.5",
           )
-          .to("#greeting-overlay", {
-            duration: 2,
-            opacity: 0,
-            delay: 1,
-            onComplete: () => {
-              // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG VÀ HIỆN NÚT NHẠC ---
-              const audio = document.getElementById("bg-music");
-              // const musicBtn = document.getElementById("music-btn");
-
-              // Hiện nút nhạc ngay lập tức
-              // musicBtn.style.display = "flex";
-              // gsap.fromTo(
-              //   musicBtn,
-              //   { opacity: 0, scale: 0.5 },
-              //   { opacity: 1, scale: 1, duration: 1 },
-              // );
-
-              if (audio) {
-                // Audio đã play ở checkPass (hoặc fail).
-                // Bây giờ cố gắng fade in volume
-                // Nếu trước đó fail, thì currentTime đang là 0.
-                // Mình chỉ cần tăng volume. Nếu nó đang pause thì thôi (người dùng sẽ tự bấm).
-                // Nhưng nếu nó đang play (silent), thì volume lên 1 sẽ nghe thấy.
-                audio.currentTime = 0; // Reset lại thời gian về 0
-                gsap.to(audio, { volume: 1, duration: 3 });
-              }
-
-              document.getElementById("greeting-overlay").style.display =
-                "none";
-              animationStarted = true;
-              startTime = clock.getElapsedTime();
-
-              setTimeout(
-                () => {
-                  const msgEl = document.getElementById("main-message");
-                  gsap.to(msgEl, { opacity: 1, duration: 1 });
-                  gsap.to(msgEl, {
-                    text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại hạnh phúc cho cuộc đời anh. Mong rằng chúng ta sẽ có một mùa Valentine bên cạnh nhau thật hạnh phúc. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
-                    duration: 20,
-                    ease: "none",
-                    onComplete: () => {
-                      gsap.to(msgEl, {
-                        opacity: 0,
-                        delay: 6,
-                        duration: 1.5,
-                        onComplete: () => {
-                          window.startFallingLetters();
-                        },
-                      });
-                    },
-                  });
-                },
-                (CONF.totalIntroTime + 1.5) * 1000,
-              );
+          // --- HIỆU ỨNG ZOOM OUT (PHÓNG XA) ---
+          .to(
+            camera.position,
+            {
+              z: 220, // Phóng ra xa (Z tăng lên)
+              y: 60, // Lên cao một chút
+              duration: 3, // Diễn ra trong 3 giây
+              ease: "power2.inOut",
             },
-          });
+            "+=0.5",
+          ) // Bắt đầu sau khi text xong 0.5s
+          .to(
+            "#greeting-overlay",
+            {
+              duration: 2,
+              opacity: 0,
+              onComplete: () => {
+                // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG VÀ HIỆN NÚT NHẠC ---
+                const audio = document.getElementById("bg-music");
+                const musicBtn = document.getElementById("music-btn");
+
+                // Hiện nút nhạc ngay lập tức
+                // musicBtn.style.display = "flex";
+                // gsap.fromTo(
+                //   musicBtn,
+                //   { opacity: 0, scale: 0.5 },
+                //   { opacity: 1, scale: 1, duration: 1 },
+                // );
+
+                if (audio) {
+                  audio.currentTime = 0; // Reset lại thời gian về 0
+                  gsap.to(audio, { volume: 1, duration: 3 });
+                }
+
+                document.getElementById("greeting-overlay").style.display =
+                  "none";
+                animationStarted = true;
+                startTime = clock.getElapsedTime();
+
+                // --- HIỆU ỨNG ZOOM IN (THU LẠI TỪ TỪ) ---
+                // Sử dụng setLength để giữ hướng nhìn nhưng giảm khoảng cách
+                const zoomObj = { val: camera.position.length() }; // Lấy độ dài hiện tại (~228)
+
+                gsap.to(zoomObj, {
+                  val: 112, // Thu về khoảng cách ban đầu (~110)
+                  duration: 20, // Thu lại rất chậm trong 20s (khi tim đang tụ)
+                  ease: "sine.out",
+                  onUpdate: () => {
+                    camera.position.setLength(zoomObj.val);
+                  },
+                });
+
+                setTimeout(
+                  () => {
+                    const msgEl = document.getElementById("main-message");
+                    gsap.to(msgEl, { opacity: 1, duration: 1 });
+                    gsap.to(msgEl, {
+                      text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại hạnh phúc cho cuộc đời anh. Mong rằng chúng ta sẽ có một mùa Valentine bên cạnh nhau thật hạnh phúc. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
+                      duration: 20,
+                      ease: "none",
+                      onComplete: () => {
+                        gsap.to(msgEl, {
+                          opacity: 0,
+                          delay: 6,
+                          duration: 1.5,
+                          onComplete: () => {
+                            window.startFallingLetters();
+                          },
+                        });
+                      },
+                    });
+                  },
+                  (CONF.totalIntroTime + 1.5) * 1000,
+                );
+              },
+            },
+            "<0.5",
+          ); // Bắt đầu fade out overlay khi zoom out gần xong
       }
 
       window.startMainSequence = startMainSequence;
