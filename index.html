@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Valentine Cinematic - Falling Letters</title>
-
+    <title>Happy Valentine's Day</title>
+    <link rel="shortcut icon" href="/heart.png" type="image/x-icon" />
     <link
       href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@100;300;400;500;600&display=swap"
       rel="stylesheet"
@@ -23,8 +23,7 @@
         margin: 0;
         overflow: hidden;
         background-color: #000;
-        font-family:
-          "Segoe UI", sans-serif; /* Mặc định dùng font hiện đại cho UI */
+        font-family: "Inter", sans-serif;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
       }
@@ -239,7 +238,7 @@
         background: rgba(255, 255, 255, 0.15);
         border: none;
         color: #fff;
-        font-family: "Segoe UI", sans-serif;
+        font-family: "Inter", sans-serif;
         font-size: 2rem;
         font-weight: 300;
         cursor: pointer;
@@ -404,7 +403,7 @@
         max-height: 200px; /* Giới hạn chiều cao */
         object-fit: cover; /* Cắt ảnh đẹp */
         border-radius: 10px;
-        margin-bottom: 15px;
+        margin-top: 15px;
         box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
       }
 
@@ -455,6 +454,13 @@
     </style>
   </head>
   <body>
+    <!-- 0. AUDIO BACKGROUND -->
+    <!-- Bạn có thể thay đổi link nhạc tại đây (ưu tiên link mp3 trực tiếp) -->
+    <!-- Link nhạc demo: Beautiful In White (Instrumental / Cover) -->
+    <audio id="bg-music" loop>
+      <source src="/lighters.mp3" type="audio/mpeg" />
+    </audio>
+
     <!-- 1. MÀN HÌNH KHÓA TÌNH YÊU -->
     <div id="lock-screen" onclick="showKeypad()">
       <div class="lock-icon"><i class="fas fa-lock"></i></div>
@@ -518,9 +524,9 @@
       <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-btn" onclick="closeCard()">×</span>
         <!-- Thẻ ảnh mới -->
-        <img id="modal-image" src="" alt="Valentine Image" />
         <h2 id="modal-title">Title</h2>
         <p id="modal-body">Content goes here...</p>
+        <img id="modal-image" src="" alt="Valentine Image" />
       </div>
     </div>
 
@@ -649,65 +655,58 @@
         {
           title: "Gửi Em",
           content:
-            "Cảm ơn em đã đến và làm thế giới của anh trở nên rực rỡ. Happy Valentine!",
-          image:
-            "https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=400&q=80",
+            "Lễ tình nhân năm nay anh đã không một mình. Cảm ơn em đã đến bên cạnh anh. Mong rằng năm sau và các năm sau nữa cũng vậy.",
+          image: "/img1.jpg",
         },
         {
           title: "My Love",
           content:
-            "Mỗi lá thư là một mảnh ghép tình yêu anh dành cho em. Yêu em nhiều!",
-          image:
-            "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=400&q=80",
+            "Anh mong rằng em sẽ là cô gái đầu tiên và cũng là duy nhất đồng hành cùng anh trong các mùa Valentine sau này.",
+          image: "/img2.jpg",
         },
         {
           title: "Sweetheart",
           content:
-            "Mong rằng nụ cười của em sẽ luôn tỏa sáng như bầu trời đêm nay.",
-          image:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+            "Valentine này anh không hứa những điều to lớn, chỉ hứa sẽ yêu em nhiều hơn hôm qua 💕",
+          image: "/img3.jpg",
         },
         {
           title: "Forever",
           content:
-            "Dù thời gian có trôi, tình cảm anh dành cho em vẫn mãi nguyên vẹn.",
-          image:
-            "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=400&q=80",
+            "Hy vọng mùa Valentine sau chúng ta vẫn bên nhau và cùng nắm tay đón một mùa Valentine thật hạnh phúc.",
+          image: "/img4.jpg",
         },
         {
           title: "Bé Yêu",
           content:
-            "Em là điều ngọt ngào nhất mà anh từng có. Chúc em một ngày thật vui!",
-          image:
-            "https://images.unsplash.com/photo-1522858547137-f1dcec554f55?w=400&q=80",
+            "Valentine không chỉ là ngày yêu, mà là ngày anh biết mình đã yêu đúng người. Có em ngày nào đối với anh cũng là ngày Valentine hết.",
+          image: "/img5.jpg",
         },
         {
           title: "Sunshine",
           content:
-            "Em là ánh nắng ấm áp trong những ngày đông lạnh giá của anh.",
-          image:
-            "https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=400&q=80",
+            "Chúc cô bé của anh luôn vui vẻ, hạnh phúc và mãi là ánh nắng trong cuộc đời anh.",
+          image: "/img6.jpg",
         },
       ];
 
-      const imageUrls = [
-        "https://cdn-icons-png.flaticon.com/512/2913/2913491.png",
-        "https://cdn-icons-png.flaticon.com/512/2544/2544158.png",
-        "https://cdn-icons-png.flaticon.com/512/3208/3208753.png",
-      ];
+      const imageUrls = ["/envelope.png", "/love-message.png", "/paper.png"];
 
       function spawnFallingLetter() {
         const container = document.getElementById("letters-container");
         const el = document.createElement("img");
         el.classList.add("falling-item");
         el.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+
+        // Tăng phạm vi rơi một chút để lấp đầy màn hình tốt hơn
         const startX = Math.random() * window.innerWidth;
-        const duration = 10 + Math.random() * 6;
+        const duration = 8 + Math.random() * 8; // Tốc độ đa dạng hơn
         const rotationDir = Math.random() > 0.5 ? 1 : -1;
 
         gsap.set(el, { x: startX, y: -100, rotation: Math.random() * 360 });
 
         el.onclick = function () {
+          // Khi click, dừng rơi và mở thiệp
           gsap.killTweensOf(el);
           gsap.to(el, {
             scale: 2,
@@ -716,20 +715,29 @@
             onComplete: () => el.remove(),
           });
           openCard(Math.floor(Math.random() * wishes.length));
+
+          // QUAN TRỌNG: Gọi lại hàm tạo thư mới NGAY LẬP TỨC để thay thế lá thư vừa mất
+          // Điều này đảm bảo số lượng thư không bao giờ giảm về 0
+          spawnFallingLetter();
         };
 
         container.appendChild(el);
+
+        // Hiệu ứng rơi
         gsap.to(el, {
-          y: window.innerHeight + 100,
+          y: window.innerHeight + 150, // Rơi quá màn hình một chút
           duration: duration,
           ease: "none",
           onComplete: () => {
+            // Khi rơi xuống đáy, xóa đi và tạo cái mới
             el.remove();
             spawnFallingLetter();
           },
         });
+
+        // Hiệu ứng lắc lư
         gsap.to(el, {
-          x: startX + (Math.random() - 0.5) * 200,
+          x: startX + (Math.random() - 0.5) * 250,
           rotation: `+=${360 * rotationDir}`,
           duration: duration,
           ease: "sine.inOut",
@@ -1066,7 +1074,7 @@
             "#greet-message",
             {
               duration: 6,
-              text: "Đây là món quà nhỏ anh dành tặng em trong ngày Valentine. Hy vọng nó sẽ mang lại nụ cười và niềm vui cho em!",
+              text: "Đây là món quà nhỏ anh dành tặng em trong ngày Valentine. Hy vọng nó sẽ mang lại cho em thật nhiều niềm vui và hạnh phúc! ❤️",
               ease: "none",
               opacity: 1,
             },
@@ -1077,6 +1085,17 @@
             opacity: 0,
             delay: 1,
             onComplete: () => {
+              // --- PHÁT NHẠC KHI TRÁI TIM BẮT ĐẦU TỤ ---
+              const audio = document.getElementById("bg-music");
+              if (audio) {
+                audio.volume = 0; // Bắt đầu từ 0
+                audio.play().catch((e) => {
+                  console.log("Cần tương tác người dùng để phát nhạc:", e);
+                });
+                // Fade in (tăng âm lượng dần dần trong 3 giây)
+                gsap.to(audio, { volume: 0.8, duration: 3 });
+              }
+
               document.getElementById("greeting-overlay").style.display =
                 "none";
               animationStarted = true;
@@ -1087,7 +1106,7 @@
                   const msgEl = document.getElementById("main-message");
                   gsap.to(msgEl, { opacity: 1, duration: 1 });
                   gsap.to(msgEl, {
-                    text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại ánh sáng cho cuộc đời anh. Mỗi khoảnh khắc bên em đều là một món quà vô giá. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
+                    text: "Gửi em, người con gái anh yêu thương nhất. Cảm ơn em đã đến và mang lại hạnh phúc cho cuộc đời anh. Mong rằng chúng ta sẽ có một mùa Valentine bên cạnh nhau thật hạnh phúc. Chúc em một ngày Valentine thật hạnh phúc và tràn ngập yêu thương! ❤️",
                     duration: 20,
                     ease: "none",
                     onComplete: () => {
