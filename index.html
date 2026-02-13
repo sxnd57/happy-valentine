@@ -3,7 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Valentine Cinematic - Falling Letters</title>
+    <title>Happy Valentine's Day</title>
+    <link rel="shortcut icon" href="/heart.png" type="image/x-icon" />
 
     <link
       href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@100;300;400;500;600&display=swap"
@@ -664,15 +665,8 @@
         if (currentInput === SECRET_PASS) {
           // --- XỬ LÝ NHẠC MẠNH MẼ HƠN ---
           const audio = document.getElementById("bg-music");
-          const musicBtn = document.getElementById("music-btn");
-
-          // Hiện nút nhạc ngay lập tức
-          musicBtn.style.display = "flex";
-          gsap.fromTo(
-            musicBtn,
-            { opacity: 0, scale: 0.5 },
-            { opacity: 1, scale: 1, duration: 0.5 },
-          );
+          // Chỉ cố gắng phát nhạc ở chế độ nền để mở khóa autoplay
+          // KHÔNG hiển thị nút nhạc ở đây nữa theo yêu cầu mới
 
           if (audio) {
             audio.volume = 0; // Để 0 ban đầu
@@ -1165,8 +1159,17 @@
             opacity: 0,
             delay: 1,
             onComplete: () => {
-              // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG ---
+              // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG VÀ HIỆN NÚT NHẠC ---
               const audio = document.getElementById("bg-music");
+              const musicBtn = document.getElementById("music-btn");
+
+              // Hiện nút nhạc ngay lập tức
+              musicBtn.style.display = "flex";
+              gsap.fromTo(
+                musicBtn,
+                { opacity: 0, scale: 0.5 },
+                { opacity: 1, scale: 1, duration: 1 },
+              );
 
               if (audio) {
                 // Audio đã play ở checkPass (hoặc fail).
@@ -1174,6 +1177,7 @@
                 // Nếu trước đó fail, thì currentTime đang là 0.
                 // Mình chỉ cần tăng volume. Nếu nó đang pause thì thôi (người dùng sẽ tự bấm).
                 // Nhưng nếu nó đang play (silent), thì volume lên 1 sẽ nghe thấy.
+                audio.currentTime = 0; // Reset lại thời gian về 0
                 gsap.to(audio, { volume: 1, duration: 3 });
               }
 
