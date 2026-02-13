@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Happy Valentine's Day</title>
-    <link rel="shortcut icon" href="/heart.png" type="image/x-icon" />
+    <title>Valentine Cinematic - Falling Letters</title>
+
     <link
       href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Segoe+UI:wght@100;300;400;500;600&display=swap"
       rel="stylesheet"
@@ -458,7 +458,10 @@
     <!-- Bạn có thể thay đổi link nhạc tại đây (ưu tiên link mp3 trực tiếp) -->
     <!-- Link nhạc demo: Beautiful In White (Instrumental / Cover) -->
     <audio id="bg-music" loop>
-      <source src="/lighters.mp3" type="audio/mpeg" />
+      <source
+        src="https://github.com/hoangtran0410/Music-Tab/raw/master/Beautiful%20In%20White.mp3"
+        type="audio/mpeg"
+      />
     </audio>
 
     <!-- 1. MÀN HÌNH KHÓA TÌNH YÊU -->
@@ -617,6 +620,15 @@
         const dots = document.querySelectorAll(".dot");
 
         if (currentInput === SECRET_PASS) {
+          // --- FIX: KÍCH HOẠT AUDIO NGAY KHI MỞ KHÓA (SILENT) ---
+          const audio = document.getElementById("bg-music");
+          if (audio) {
+            audio.volume = 0; // Để 0 để chưa nghe thấy
+            audio.play().catch((e) => {
+              console.log("Audio play failed on click:", e);
+            });
+          }
+
           gsap.to("#keypad-screen", {
             opacity: 0,
             scale: 1.1,
@@ -1085,15 +1097,12 @@
             opacity: 0,
             delay: 1,
             onComplete: () => {
-              // --- PHÁT NHẠC KHI TRÁI TIM BẮT ĐẦU TỤ ---
+              // --- KHI TRÁI TIM TỤ: TĂNG ÂM LƯỢNG ---
               const audio = document.getElementById("bg-music");
               if (audio) {
-                audio.volume = 0; // Bắt đầu từ 0
-                audio.play().catch((e) => {
-                  console.log("Cần tương tác người dùng để phát nhạc:", e);
-                });
-                // Fade in (tăng âm lượng dần dần trong 3 giây)
-                gsap.to(audio, { volume: 0.8, duration: 3 });
+                // Audio đã play ở checkPass, giờ chỉ cần fade in
+                audio.currentTime = 0; // Reset lại từ đầu nếu muốn khớp nhạc
+                gsap.to(audio, { volume: 1, duration: 3 });
               }
 
               document.getElementById("greeting-overlay").style.display =
